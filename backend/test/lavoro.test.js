@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 
 import {
   sigilla, sigilloValido, firmaScheda, verificaScheda, riverifica, controllaSigilli,
-  MOTIVO_FIRMA, ErroreFileLavoro
+  MOTIVO_FIRMA, MOTIVO_MODIFICATA, ErroreFileLavoro
 } from '../lavoro.js';
 import { fondiVoci, stessoValore, MOTIVO_CONFLITTO } from '../fusione.js';
 import { normalizzaRisposta, contestoVoce } from '../chat.js';
@@ -171,6 +171,64 @@ test('riverifica: con un PDF diverso la citazione non si ritrova e la voce resta
   const esito = riverifica(scheda.voci, altro, SEGRETO);
   assert.equal(esito.ripristinate, 0);
   assert.equal(esito.voci[0].stato, 'da_verificare');
+});
+
+test('riverifica: valore cambiato a mano nel file, citazione vera, la voce NON torna confermata', () => {
+  const { scheda, firma } = firmaScheda(schedaDiProva(), SEGRETO);
+  const manomessa = structuredClone(scheda);
+  manomessa.voci[0].valore = '30 m';
+  const { scheda: ripresa } = verificaScheda(manomessa, firma, SEGRETO, 'file');
+  const esito = riverifica(ripresa.voci, [{ ...fonti[0], pagine: pagineF1 }], SEGRETO);
+  assert.equal(esito.ripristinate, 0);
+  assert.equal(esito.voci[0].stato, 'da_verificare');
+  assert.equal(esito.voci[0].motivo, MOTIVO_MODIFICATA);
+  assert.equal(esito.voci[0].valore, '30 m', 'il valore resta visibile, ma non confermato');
+  assert.equal(esito.voci[0].citazioni[0].verificata, true, 'la citazione in sé si ritrova');
+  assert.equal(esito.voci[0].daRiverificare, undefined, 'non va riproposta a ogni ricarica');
+});
+
+test('riverifica: conferma spostata su un altro parametro o voce mai confermata forzata, restano aperte', () => {
+  const { scheda, firma } = firmaScheda(schedaDiProva(), SEGRETO);
+  const manomessa = structuredClone(scheda);
+  manomessa.voci[0].parametro = 'Portata massima per punto (kg)';
+  manomessa.voci[1].stato = 'confermato';
+  manomessa.voci[1].statoProposto = 'confermato';
+  const { scheda: ripresa } = verificaScheda(manomessa, firma, SEGRETO, 'file');
+  const esito = riverifica(ripresa.voci, [{ ...fonti[0], pagine: pagineF1 }], SEGRETO);
+  assert.equal(esito.ripristinate, 0);
+  assert.equal(esito.voci[0].stato, 'da_verificare');
+  assert.equal(esito.voci[1].stato, 'da_verificare');
+});
+
+test('riverifica: sigillo originale copiato da un\'altra voce non vale', () => {
+  const { scheda, firma } = firmaScheda(schedaDiProva(), SEGRETO);
+  const manomessa = structuredClone(scheda);
+  manomessa.voci[1].stato = 'confermato';
+  manomessa.voci[1].sigillo = manomessa.voci[0].sigillo;
+  const { scheda: ripresa } = verificaScheda(manomessa, firma, SEGRETO, 'file');
+  const esito = riverifica(ripresa.voci, [{ ...fonti[0], pagine: pagineF1 }], SEGRETO);
+  assert.equal(esito.voci[1].stato, 'da_verificare');
+  assert.equal(esito.voci[0].stato, 'confermato', 'la voce autentica torna confermata');
+});
+
+test('riverifica: dopo un cambio di segreto le conferme non si ripristinano', () => {
+  const { scheda, firma } = firmaScheda(schedaDiProva(), SEGRETO);
+  const { scheda: ripresa } = verificaScheda(structuredClone(scheda), firma, ALTRO_SEGRETO, 'file');
+  const esito = riverifica(ripresa.voci, [{ ...fonti[0], pagine: pagineF1 }], ALTRO_SEGRETO);
+  assert.equal(esito.ripristinate, 0);
+  assert.equal(esito.voci[0].motivo, MOTIVO_MODIFICATA);
+});
+
+test('riverifica: file non firmato ma intatto, passa per firma e ripresa due volte e torna confermato', () => {
+  const { scheda } = firmaScheda(schedaDiProva(), SEGRETO);
+  let { scheda: s } = verificaScheda(structuredClone(scheda), 'x', SEGRETO, 'file');
+  // il PM salva prima di ricaricare i regolamenti, poi riprende di nuovo senza firma valida
+  s = verificaScheda(JSON.parse(JSON.stringify(firmaScheda(s, SEGRETO).scheda)), 'x', SEGRETO, 'file').scheda;
+  const esito = riverifica(s.voci, [{ ...fonti[0], pagine: pagineF1 }], SEGRETO);
+  assert.equal(esito.ripristinate, 1);
+  assert.equal(esito.voci[0].stato, 'confermato');
+  assert.equal(esito.voci[0].sigilloOriginale, undefined);
+  assert.equal(sigilloValido(esito.voci[0], [fonti[0]], SEGRETO), true);
 });
 
 // ── Fusione con nuovi regolamenti ──────────────────────────────────────────

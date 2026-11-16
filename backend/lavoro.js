@@ -25,6 +25,9 @@ export const FORMATO = 'wes-scheda-regolamenti';
 export const VERSIONE = 1;
 export const MOTIVO_FIRMA = 'File di lavoro senza firma valida: la citazione va riverificata ricaricando i regolamenti.';
 export const MOTIVO_SIGILLO = 'Conferma non riconosciuta dal servizio: la citazione va riverificata ricaricando i regolamenti.';
+export const MOTIVO_MODIFICATA =
+  'La citazione si ritrova nel regolamento, ma la voce non corrisponde più a quella confermata dal servizio ' +
+  '(modificata fuori dall\'app, oppure il segreto del servizio è cambiato): controllare valore e citazione sul regolamento.';
 
 export class ErroreFileLavoro extends Error {
   constructor(messaggio) {
@@ -72,16 +75,24 @@ export function sigilloValido(voce, fonti, segreto) {
   return firmaValida(datiSigillo(voce, shaFonti(fonti)), voce.sigillo, segreto, 'voce');
 }
 
-/** Porta una voce confermata a "da_verificare", conservando la proposta e le risposte del PM. */
+/**
+ * Porta una voce confermata a "da_verificare", conservando la proposta e le
+ * risposte del PM. Il sigillo della conferma resta in `sigilloOriginale`: la
+ * riverifica lo usa per controllare che valore, parametro e citazioni siano
+ * ancora quelli confermati dal servizio (una citazione vera non basta a
+ * riconfermare un valore cambiato a mano).
+ */
 export function declassa(voce, motivo) {
-  const { sigillo: _s, ...resto } = voce;
+  const { sigillo, ...resto } = voce;
+  const sigilloOriginale = sigillo || resto.sigilloOriginale;
   return {
     ...resto,
     stato: 'da_verificare',
     statoProposto: resto.statoProposto || 'confermato',
     motivo,
     daRiverificare: true,
-    citazioni: (resto.citazioni || []).map((c) => ({ ...c, verificata: null }))
+    citazioni: (resto.citazioni || []).map((c) => ({ ...c, verificata: null })),
+    ...(sigilloOriginale ? { sigilloOriginale } : {})
   };
 }
 
@@ -165,7 +176,10 @@ export function verificaScheda(scheda, firmaRicevuta, segreto, modo = 'file') {
 /**
  * Ripete la verifica delle citazioni sulle voci declassate, con i regolamenti
  * ricaricati dal PM. Una voce torna "confermato" solo se il modello l'aveva
- * proposta come confermata e tutte le sue citazioni vengono ritrovate.
+ * proposta come confermata, tutte le sue citazioni vengono ritrovate e il
+ * sigillo della conferma originale vale ancora per la voce così com'è
+ * (stesso valore, parametro, sezione, citazioni e PDF). Senza sigillo valido
+ * la voce resta "da_verificare" con MOTIVO_MODIFICATA.
  *
  * @param {Array} voci  voci della scheda
  * @param {Array} fonti  fonti ricaricate: [{ id, sha256, pagine }] con gli
@@ -183,12 +197,16 @@ export function riverifica(voci, fonti, segreto) {
       ancoraAperte++;
       return v;
     }
-    const { daRiverificare: _d, ...resto } = v;
+    const { daRiverificare: _d, sigilloOriginale, ...resto } = v;
     const candidata = { ...resto, stato: v.statoProposto === 'confermato' ? 'confermato' : v.stato, motivo: null };
     const verificata = verificaVoce(candidata, indici);
     if (verificata.stato === 'confermato') {
-      ripristinate++;
-      return sigilla(verificata, fonti, segreto);
+      if (sigilloOriginale && sigilloValido({ ...verificata, sigillo: sigilloOriginale }, fonti, segreto)) {
+        ripristinate++;
+        return sigilla(verificata, fonti, segreto);
+      }
+      ancoraAperte++;
+      return { ...verificata, stato: 'da_verificare', motivo: MOTIVO_MODIFICATA };
     }
     ancoraAperte++;
     return verificata;

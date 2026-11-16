@@ -36,7 +36,7 @@ Il servizio **non conserva nulla**: nessun database, nessun file su disco. I reg
 ### Perché la scheda è affidabile
 
 - **Citazioni verificate dal codice.** Il modello propone voci e citazioni; il codice cerca ogni citazione, alla lettera, nel testo della pagina indicata (o di quelle vicine). Se non la trova, la voce scende a "Da verificare". Su ogni citazione resta scritto se è stata trovata nel testo del PDF o con la lettura ottica.
-- **Sigilli.** Ogni voce confermata riceve dal servizio un sigillo che lega stato, valore e citazioni all'impronta del PDF. Una conferma non può nascere da una modifica a mano del file né da una risposta in chat.
+- **Sigilli.** Ogni voce confermata riceve dal servizio un sigillo che lega stato, valore e citazioni all'impronta del PDF. Una conferma non può nascere da una modifica a mano del file né da una risposta in chat. Quando un file di lavoro senza firma valida viene ripreso e il PM ricarica i regolamenti, una voce torna "Confermato" solo se la citazione si ritrova **e** il sigillo originale vale ancora: un valore cambiato a mano resta "Da verificare" anche se la citazione è autentica.
 - **Risposte del PM separate.** "Chiarito dal PM", "In attesa" e "Non applicabile" stanno in un campo a parte e non rendono mai una voce "Confermato"; anche il PDF di consegna le distingue.
 - **Nessun output troncato in scheda.** Se il modello si ferma per limite di lunghezza, la risposta è scartata e il compito viene diviso; ciò che non si riesce a completare compare come "Da verificare – estrazione incompleta".
 
@@ -79,7 +79,7 @@ Incollarlo direttamente in `FIRMA_SEGRETO` su Render (Environment → Save, rebu
 
 **Dove conservarlo.** Solo nel pannello di Render e in una copia nel gestore di password aziendale. Mai nel repository, in chat, in email o in file condivisi. Non stamparlo a schermo.
 
-**Cosa succede se cambia.** Tutti i file di lavoro salvati prima del cambio risultano "senza firma valida": si aprono, le risposte dei PM restano, ma le voci confermate tornano "Da verificare". Il PM le riporta a "Confermato" con **Aggiungi o ricarica regolamenti**, caricando gli stessi PDF: la verifica delle citazioni si ripete. Per questo il segreto si cambia solo se c'è motivo di ritenerlo esposto, avvisando i PM.
+**Cosa succede se cambia.** Tutti i file di lavoro salvati prima del cambio risultano "senza firma valida": si aprono, le risposte dei PM restano, ma le voci confermate tornano "Da verificare". Anche i sigilli delle voci erano fatti con il vecchio segreto, quindi **ricaricare i regolamenti non basta a riconfermarle**: restano "Da verificare" con il motivo "la voce non corrisponde più a quella confermata dal servizio". Per riavere le conferme il PM apre una **scheda nuova** con gli stessi PDF e riporta a mano le risposte già date, leggendole dal vecchio file. Per questo il segreto si cambia solo se c'è motivo di ritenerlo esposto, avvisando prima i PM di chiudere le schede in corso.
 
 **Se è stato esposto** (per esempio pubblicato per errore): generarne subito uno nuovo, sostituirlo su Render e avvisare i PM come sopra. Lo stesso vale per `CODICE_ACCESSO` e, se esposta, per la chiave API (da revocare nella console Anthropic).
 
