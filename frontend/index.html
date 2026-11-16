@@ -431,6 +431,32 @@ input[type="file"] { font: 14px var(--font-body); color: var(--fg); max-width: 1
 .chat-piede textarea:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; }
 .riga { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 
+/* ── Assistente virtuale (casella in basso a destra) ────────────────────── */
+#vista { padding-bottom: 72px; }
+.assistente-box { position: fixed; right: 16px; bottom: 16px; z-index: 35; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; pointer-events: none; }
+.assistente-box > * { pointer-events: auto; }
+.assistente-bottone {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 600 15px/1 var(--font-body); padding: 11px 16px 11px 11px; border-radius: 999px;
+  background: var(--btn-on); color: var(--btn-on-fg); border: 0; box-shadow: var(--ombra); cursor: pointer;
+}
+.assistente-bottone:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+.assistente-icona { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--btn-on-fg); color: var(--btn-on); font: 800 15px/1 var(--font-body); }
+.assistente-pannello {
+  width: min(380px, calc(100vw - 32px)); height: min(520px, calc(100vh - 96px));
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--panel); color: var(--fg);
+  border: 1px solid var(--btn-line); border-radius: 16px; box-shadow: var(--ombra);
+}
+.assistente-pannello .chat-testa { padding: 12px 14px; }
+.assistente-pannello .chat-testa h2 { font-size: 20px; }
+.assistente-pannello .chat-corpo { padding: 12px 14px; }
+.assistente-pannello .chat-piede { padding: 10px 14px 12px; }
+.assistente-pannello .chat-piede textarea { min-height: 52px; }
+.assistente-box .collegamenti { align-self: flex-start; max-width: 92%; display: flex; flex-wrap: wrap; gap: 2px 6px; margin-top: -4px; }
+.assistente-box .collegamenti .btn { font-size: 12.5px; padding-block: 2px; }
+body.chat-aperta .assistente-box { display: none; }
+
 /* ── Dialoghi ───────────────────────────────────────────────────────────── */
 dialog { border: 1px solid var(--btn-line); border-radius: 16px; padding: 22px; background: var(--panel); color: var(--fg); max-width: min(560px, calc(100vw - 32px)); box-shadow: var(--ombra); }
 dialog::backdrop { background: hsl(222 20% 10% / .45); }
@@ -472,7 +498,8 @@ dialog .riga { margin-top: 16px; }
   body { font-size: 13px; }
   .wrap { max-width: none; }
   .solo-stampa { display: block; }
-  #apertura, #lavoro, #chat, dialog, .bar, .dati, #avvisi-scheda, .azioni-tile, .vista-eyebrow, summary { display: none !important; }
+  #apertura, #lavoro, #chat, #assistente, dialog, .bar, .dati, #avvisi-scheda, .azioni-tile, .vista-eyebrow, summary { display: none !important; }
+  #vista { padding-bottom: 0 !important; }
   .top { padding: 0 0 12px; }
   h1 { font-size: 44px; }
   .sub { font-size: 14px; margin-top: 8px; }
@@ -618,6 +645,27 @@ dialog .riga { margin-top: 16px; }
 
     <main class="cards" id="cards"></main>
     <p class="foot" id="piede"></p>
+
+    <!-- ═══ Assistente virtuale: domande libere sulla scheda aperta ═══════════ -->
+    <div class="assistente-box" id="assistente">
+      <section class="assistente-pannello" id="assistente-pannello" hidden aria-label="Assistente della scheda">
+        <div class="chat-testa">
+          <div><h2>Assistente</h2><span class="t">Domande su questa scheda</span></div>
+          <button type="button" class="btn piccolo" id="chiudi-assistente" aria-label="Chiudi l'assistente">Chiudi</button>
+        </div>
+        <div class="chat-corpo" id="assistente-corpo" aria-live="polite"></div>
+        <form class="chat-piede" id="assistente-form">
+          <textarea id="assistente-testo" rows="2" maxlength="2000" placeholder="Es. qual è l'altezza massima per uno stand a isola?" aria-label="Domanda per l'assistente"></textarea>
+          <div class="riga">
+            <button type="submit" class="btn primary piccolo" id="assistente-invia">Chiedi</button>
+            <button type="button" class="btn piccolo" id="assistente-svuota">Nuova conversazione</button>
+          </div>
+        </form>
+      </section>
+      <button type="button" class="assistente-bottone" id="apri-assistente" aria-expanded="false" aria-controls="assistente-pannello">
+        <span class="assistente-icona" aria-hidden="true">?</span> Assistente
+      </button>
+    </div>
   </section>
 </div>
 
@@ -1585,6 +1633,7 @@ dialog .riga { margin-top: 16px; }
     stato.scheda = null;
     stato.sporca = false;
     stato.avvisi = [];
+    chiudiAssistente();
     fileNuova = []; fileRipresa = [];
     ['pdf-nuova', 'json-ripresa', 'pdf-ripresa'].forEach(function (id) { $(id).value = ''; });
     disegnaElencoFile('elenco-nuova', []);
@@ -1765,6 +1814,113 @@ dialog .riga { margin-top: 16px; }
       return;
     }
     if (e.target.closest('[data-registra]')) registraProposta();
+  });
+
+  // ── Assistente virtuale ──────────────────────────────────────────────────
+  // Domande libere sulla scheda aperta. L'assistente legge la scheda, non la
+  // modifica: la conversazione resta in questa pagina e non va nel file di
+  // lavoro. Si azzera quando si apre un'altra scheda.
+  var assistente = { scheda: null, messaggi: [], inCorso: false, errore: '' };
+
+  function schedaPerAssistente() {
+    var s = stato.scheda;
+    return {
+      fiera: { nome: s.fiera && s.fiera.nome || '', date: s.fiera && s.fiera.date || '' },
+      commessa: { numero: s.commessa && s.commessa.numero || '' },
+      fonti: (s.fonti || []).map(function (f) { return { id: f.id, file: f.file, ruolo: f.ruolo, pagine: f.pagine }; }),
+      voci: s.voci.map(function (v) {
+        var r = v.chiarimento;
+        return {
+          id: v.id, sezione: v.sezione, parametro: v.parametro, stato: v.stato, valore: v.valore, motivo: v.motivo,
+          citazioni: (v.citazioni || []).map(function (c) { return { fonte: c.fonte, pagina: c.pagina, testo: c.testo }; }),
+          chiarimento: r ? { tipo: r.tipo, valore: r.valore, fonte: r.fonte, chi: r.chi, dal: r.dal } : null
+        };
+      })
+    };
+  }
+
+  function disegnaAssistente() {
+    var corpo = $('assistente-corpo');
+    var html = '<div class="msg assistente">Chiedimi qualcosa su questa scheda: un limite, una scadenza, quali voci sono ancora aperte, cosa dice il regolamento su un tema. Rispondo solo con quello che c\'è nella scheda.</div>';
+    assistente.messaggi.forEach(function (m) {
+      html += '<div class="msg ' + (m.ruolo === 'pm' ? 'pm' : 'assistente') + '">' + esc(m.ruolo === 'pm' ? m.testo : conFonti(m.testo)) + '</div>';
+      var voci = (m.voci || []).map(voce).filter(Boolean);
+      if (voci.length) {
+        html += '<div class="collegamenti">' + voci.map(function (v) {
+          return '<a href="#voce-' + esc(v.id) + '" class="btn testo piccolo" data-vai="' + esc(v.id) + '">' + esc(v.parametro) + '</a>';
+        }).join('') + '</div>';
+      }
+    });
+    if (assistente.inCorso) html += '<div class="msg sistema">L\'assistente sta scrivendo…</div>';
+    if (assistente.errore) html += '<div class="avviso errore">' + esc(assistente.errore) + '</div>';
+    corpo.innerHTML = html;
+    corpo.scrollTop = corpo.scrollHeight;
+    $('assistente-invia').disabled = assistente.inCorso;
+  }
+
+  function apriAssistente() {
+    if (!stato.scheda) return;
+    if (assistente.scheda !== stato.scheda) { assistente.scheda = stato.scheda; assistente.messaggi = []; assistente.errore = ''; }
+    $('assistente-pannello').hidden = false;
+    $('apri-assistente').setAttribute('aria-expanded', 'true');
+    disegnaAssistente();
+    $('assistente-testo').focus();
+  }
+  function chiudiAssistente() {
+    $('assistente-pannello').hidden = true;
+    $('apri-assistente').setAttribute('aria-expanded', 'false');
+  }
+  $('apri-assistente').addEventListener('click', function () {
+    if ($('assistente-pannello').hidden) apriAssistente(); else chiudiAssistente();
+  });
+  $('chiudi-assistente').addEventListener('click', function () { chiudiAssistente(); $('apri-assistente').focus(); });
+  $('assistente-svuota').addEventListener('click', function () {
+    if (assistente.inCorso) return;
+    assistente.messaggi = []; assistente.errore = '';
+    disegnaAssistente();
+    $('assistente-testo').focus();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !$('assistente-pannello').hidden && $('chat').hidden && !document.querySelector('dialog[open]')) chiudiAssistente();
+  });
+
+  // Un collegamento a una voce nascosta dal filtro riporta il filtro su "Tutte"
+  $('assistente-corpo').addEventListener('click', function (e) {
+    var a = e.target.closest('[data-vai]');
+    if (!a) return;
+    var tessera = $('voce-' + a.getAttribute('data-vai'));
+    if (tessera && tessera.offsetParent === null) {
+      var tutte = $('filtri').querySelector('button');
+      if (tutte) tutte.click();
+    }
+  });
+
+  $('assistente-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var testo = $('assistente-testo').value.trim();
+    if (!testo || assistente.inCorso || !stato.scheda) return;
+    assistente.messaggi.push({ ruolo: 'pm', testo: testo });
+    $('assistente-testo').value = '';
+    assistente.inCorso = true; assistente.errore = '';
+    disegnaAssistente();
+    try {
+      var r = await chiama('/api/assistente', {
+        scheda: schedaPerAssistente(),
+        messaggi: assistente.messaggi.map(function (m) { return { ruolo: m.ruolo, testo: m.testo }; })
+      });
+      assistente.messaggi.push({ ruolo: 'assistente', testo: r.messaggio || 'Nessuna risposta.', voci: r.voci || [] });
+    } catch (err) {
+      // La domanda senza risposta torna nella casella, così si può riprovare
+      assistente.messaggi.pop();
+      $('assistente-testo').value = testo;
+      assistente.errore = err.message + (err.stato === 401 ? ' Chiudi la scheda dopo averla salvata e inserisci di nuovo il codice d\'accesso.' : '');
+    } finally {
+      assistente.inCorso = false;
+      disegnaAssistente();
+    }
+  });
+  $('assistente-testo').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('assistente-form').requestSubmit(); }
   });
 
   // La registrazione la fa il PM: la proposta diventa la risposta della voce.

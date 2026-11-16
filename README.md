@@ -29,6 +29,7 @@ Il servizio **non conserva nulla**: nessun database, nessun file su disco. I reg
 | `backend/lavoro.js` | sigilli delle voci confermate, firma e verifica del file di lavoro, riverifica |
 | `backend/fusione.js` | fusione per identificativo quando si aggiungono regolamenti a un lavoro ripreso |
 | `backend/chat.js` | chat di risoluzione, una voce alla volta |
+| `backend/assistente.js` | assistente virtuale: domande libere sulla scheda aperta, senza modificarla |
 | `backend/firma.js` | firma HMAC con il segreto `FIRMA_SEGRETO` |
 | `frontend/index.html` | la pagina dell'app: apertura, schede, chat, file di lavoro, stampa |
 | `render.yaml` | configurazione del servizio su Render (Blueprint) |
@@ -53,7 +54,7 @@ Su Render si inseriscono in **Environment** del servizio. In locale si scrivono 
 | `FIRMA_SEGRETO` | **sì** | almeno 32 caratteri casuali | firma il testo delle pagine e il file di lavoro; vedi la sezione dedicata |
 | `MODELLO` | no | `claude-sonnet-5-5` | modello usato per estrazione e chat; si cambia senza toccare il codice |
 | `EFFORT` | no | `medium` | profondità di ragionamento nell'estrazione (`low`, `medium`, `high`) |
-| `EFFORT_CHAT` | no | `low` | profondità di ragionamento nella chat |
+| `EFFORT_CHAT` | no | `low` | profondità di ragionamento nella chat e nell'assistente |
 | `MAX_TOKENS` | no | `32000` | lunghezza massima di una risposta di estrazione; oltre, il compito si divide |
 | `MAX_MB` | no | `25` | dimensione massima dei regolamenti inviati insieme |
 | `LIMITE_ORARIO` | no | `200` | richieste all'ora per indirizzo IP |
@@ -130,6 +131,7 @@ La pagina è su <http://localhost:3000>.
 3. Leggere le schede A-J. Con **Voci aperte** la chat propone le voci "Da verificare" e "Non specificato" una alla volta: rispondere con valore e fonte, oppure "Non applicabile" o "In attesa".
 4. **Salva file di lavoro** (servono nome PM e numero di commessa nel formato `001-2027`). Per riprendere: **Riprendi un lavoro** con quel file `.json`, eventualmente insieme a nuovi regolamenti da fondere.
 5. **Stampa / PDF** produce il PDF di consegna: "BOZZA" se ci sono voci aperte, "Versione del giorno" quando sono tutte chiuse o in attesa.
+6. In qualsiasi momento, il pulsante **Assistente** in basso a destra apre una piccola chat per fare domande sulla scheda aperta ("qual è l'altezza massima per uno stand a isola?", "quali scadenze ci sono a marzo?"). L'assistente risponde solo con quello che c'è nella scheda, indica sempre lo stato e la pagina di ogni dato, non converte unità e non modifica nulla: per registrare risposte si usa **Voci aperte**. La conversazione non finisce nel file di lavoro e si azzera quando si apre un'altra scheda. Ogni domanda invia al servizio AI la scheda (senza i PDF): la prima costa circa 30.000 token di lettura, le successive sulla stessa scheda molto meno, grazie alla cache.
 
 Il PDF di consegna **non** serve a riprendere il lavoro: se viene caricato al suo posto, l'app lo respinge. La copia automatica nel browser è solo una rete di sicurezza: la copia che conta è il file di lavoro.
 

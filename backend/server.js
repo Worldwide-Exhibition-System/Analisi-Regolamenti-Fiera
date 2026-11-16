@@ -20,6 +20,7 @@ import { vociIncomplete } from './scheda.js';
 import { sigilla, firmaScheda, verificaScheda, riverifica, ErroreFileLavoro, FORMATO, VERSIONE } from './lavoro.js';
 import { fondiVoci } from './fusione.js';
 import { rispondi, ErroreChat } from './chat.js';
+import { rispondiAssistente, ErroreAssistente } from './assistente.js';
 import { firma, firmaValida, ErroreFirma } from './firma.js';
 
 // ── Configurazione ────────────────────────────────────────────────────────
@@ -312,6 +313,24 @@ app.post('/api/fondi', controlliApi, (req, res, next) => {
 });
 
 // ── Chat di risoluzione ───────────────────────────────────────────────────
+// Assistente virtuale: domande libere sulla scheda aperta. Non modifica la
+// scheda; nei log solo numeri, mai domande, risposte o contenuti.
+app.post('/api/assistente', controlliApi, async (req, res, next) => {
+  try {
+    const { scheda, messaggi } = req.body || {};
+    if (!scheda || typeof scheda !== 'object' || !Array.isArray(scheda.voci) || !Array.isArray(messaggi)) {
+      return res.status(400).json({ errore: "Richiesta all'assistente non valida." });
+    }
+    const esito = await rispondiAssistente({ client, modello: MODELLO, effort: EFFORT_CHAT, scheda, messaggi });
+    const u = esito.uso || {};
+    console.log(`[assistente] ${scheda.voci.length} voci · ${esito.voci.length} citate · in ${u.input_tokens} cache ${u.cache_read_input_tokens || 0} out ${u.output_tokens}`);
+    const { uso: _u, ...risposta } = esito;
+    res.json(risposta);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.post('/api/chat', controlliApi, async (req, res, next) => {
   try {
     const { voce, fonti, collegate, lingua, messaggi, richiesta } = req.body || {};
@@ -355,6 +374,9 @@ app.use((err, _req, res, _next) => {
   }
   if (err instanceof ErroreChat) {
     return res.status(502).json({ errore: err.message, codice: 'chat' });
+  }
+  if (err instanceof ErroreAssistente) {
+    return res.status(502).json({ errore: err.message, codice: 'assistente' });
   }
   if (err instanceof ErroreEstrazione) {
     return res.status(502).json({ errore: err.message, codice: err.codice });
