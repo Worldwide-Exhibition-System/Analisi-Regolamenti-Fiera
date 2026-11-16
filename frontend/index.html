@@ -1,0 +1,1893 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scheda regolamenti fiera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+/* Aspetto ripreso da reference/design/npe2027-schede.html: schede orizzontali a
+   tutta larghezza, binario a sinistra (lettera, titolo, conteggi) e tessere a
+   destra, una tinta per sezione (--h, --s). */
+:root {
+  --font-display: "Big Shoulders Display", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --bg: hsl(220 10% 94%);
+  --fg: hsl(222 20% 14%);
+  --muted: hsl(222 10% 38%);
+  --bar: hsl(220 10% 94% / .94);
+  --btn: hsl(0 0% 100%);
+  --btn-line: hsl(220 10% 78%);
+  --btn-on: hsl(222 20% 14%);
+  --btn-on-fg: hsl(220 10% 96%);
+  --panel: hsl(0 0% 100%);
+  --field: hsl(0 0% 100%);
+  --err: #b42318;
+  --err-bg: hsl(4 80% 96%);
+  --info-bg: hsl(40 90% 94%);
+
+  --card-l: 91%;
+  --alt-d: -4%;
+  --card-fg-l: 13%;
+  --card-mut-l: 34%;
+  --card-ac-l: 31%;
+  --tile: hsl(0 0% 100% / .6);
+  --chip: hsl(0 0% 100% / .88);
+
+  --ok: #15803d;
+  --warn: #92400e;
+  --na: #b42318;
+  --na-bg: #d92d20;
+  --na-fg: #ffffff;
+  --ok-bg: #15803d;
+  --ok-fg: #ffffff;
+  --warn-bg: #f5a524;
+  --warn-fg: #2b1a00;
+  --tile-ok: hsl(0 0% 100% / .82);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: hsl(222 14% 9%);
+    --fg: hsl(220 14% 92%);
+    --muted: hsl(220 8% 66%);
+    --bar: hsl(222 14% 9% / .94);
+    --btn: hsl(222 12% 14%);
+    --btn-line: hsl(222 10% 28%);
+    --btn-on: hsl(220 14% 92%);
+    --btn-on-fg: hsl(222 14% 9%);
+    --panel: hsl(222 12% 13%);
+    --field: hsl(222 12% 10%);
+    --err: #fca5a5;
+    --err-bg: hsl(0 40% 16%);
+    --info-bg: hsl(40 40% 15%);
+    --card-l: 17%;
+    --alt-d: 5%;
+    --card-fg-l: 93%;
+    --card-mut-l: 72%;
+    --card-ac-l: 74%;
+    --tile: hsl(0 0% 100% / .06);
+    --chip: hsl(0 0% 100% / .1);
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --na: #fca5a5;
+    --na-bg: #f87171;
+    --na-fg: #2a0606;
+    --ok-bg: #4ade80;
+    --ok-fg: #052e16;
+    --warn-bg: #fbbf24;
+    --warn-fg: #2b1a00;
+    --tile-ok: hsl(0 0% 100% / .09);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: hsl(222 14% 9%);
+  --fg: hsl(220 14% 92%);
+  --muted: hsl(220 8% 66%);
+  --bar: hsl(222 14% 9% / .94);
+  --btn: hsl(222 12% 14%);
+  --btn-line: hsl(222 10% 28%);
+  --btn-on: hsl(220 14% 92%);
+  --btn-on-fg: hsl(222 14% 9%);
+  --panel: hsl(222 12% 13%);
+  --field: hsl(222 12% 10%);
+  --err: #fca5a5;
+  --err-bg: hsl(0 40% 16%);
+  --info-bg: hsl(40 40% 15%);
+  --card-l: 17%;
+  --alt-d: 5%;
+  --card-fg-l: 93%;
+  --card-mut-l: 72%;
+  --card-ac-l: 74%;
+  --tile: hsl(0 0% 100% / .06);
+  --chip: hsl(0 0% 100% / .1);
+  --ok: #4ade80;
+  --warn: #fbbf24;
+  --na: #fca5a5;
+  --na-bg: #f87171;
+  --na-fg: #2a0606;
+  --ok-bg: #4ade80;
+  --ok-fg: #052e16;
+  --warn-bg: #fbbf24;
+  --warn-fg: #2b1a00;
+  --tile-ok: hsl(0 0% 100% / .09);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { overflow-x: hidden; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-block: 0 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 1240px; margin: 0 auto; }
+[hidden] { display: none !important; }
+
+/* testata */
+.top { padding: 40px 0 26px; }
+.eyebrow { margin: 0 0 10px; font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 {
+  margin: 0;
+  font: 800 clamp(46px, 9vw, 104px)/.9 var(--font-display);
+  letter-spacing: -.005em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+h1 span { font-weight: 700; color: var(--muted); }
+.sub { margin: 16px 0 0; max-width: 62ch; font-size: 18px; color: var(--fg); }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 14px 0 0; padding: 0; list-style: none; font-size: 14px; color: var(--muted); }
+.facts li { min-width: 0; overflow-wrap: anywhere; }
+
+/* barra comandi */
+.bar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 20;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px;
+  padding: 10px 0;
+  background: var(--bar);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.nav-l {
+  display: grid; place-items: center;
+  min-width: 36px; height: 36px; padding: 0 7px; border-radius: 8px;
+  background: hsl(var(--h) var(--s) var(--card-l));
+  color: hsl(var(--h) calc(var(--s) + 12%) var(--card-ac-l));
+  text-decoration: none;
+  font: 800 19px/1 var(--font-display);
+  border: 1px solid hsl(var(--h) var(--s) 50% / .35);
+}
+.nav-l:hover { border-color: hsl(var(--h) calc(var(--s) + 12%) var(--card-ac-l)); }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.filters button, .btn {
+  font: 600 14px/1 var(--font-body);
+  color: var(--fg); background: var(--btn);
+  border: 1px solid var(--btn-line); border-radius: 999px;
+  padding: 9px 14px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.filters button b { font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.filters button[aria-pressed="true"], .btn.primary { background: var(--btn-on); color: var(--btn-on-fg); border-color: var(--btn-on); }
+.filters button[aria-pressed="true"] b { color: inherit; opacity: .8; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.filters button:focus-visible, .nav-l:focus-visible, summary:focus-visible, .btn:focus-visible, a:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.tools { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* schede */
+.cards { display: flex; flex-direction: column; gap: 18px; margin-top: 14px; }
+.card {
+  --bgc: hsl(var(--h) var(--s) var(--card-l));
+  --fgc: hsl(var(--h) 24% var(--card-fg-l));
+  --mutc: hsl(var(--h) 14% var(--card-mut-l));
+  --acc: hsl(var(--h) calc(var(--s) + 12%) var(--card-ac-l));
+  display: grid;
+  grid-template-columns: minmax(210px, 260px) minmax(0, 1fr);
+  gap: 18px 34px;
+  padding: clamp(18px, 3vw, 32px);
+  border-radius: 18px;
+  background: var(--bgc);
+  color: var(--fgc);
+  scroll-margin-top: 76px;
+}
+.rail { min-width: 0; align-self: start; display: flex; flex-direction: column; gap: 10px; }
+.letter { margin: 0; font: 800 clamp(96px, 14vw, 152px)/.8 var(--font-display); color: var(--acc); }
+.card h2 { margin: 0; font: 700 30px/1.02 var(--font-display); text-transform: uppercase; letter-spacing: .01em; text-wrap: balance; }
+.counts { margin: 6px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.counts li { display: flex; align-items: center; gap: 10px; }
+.counts b { font: 700 18px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.rail-note { margin: 4px 0 0; font-size: 14px; color: var(--mutc); }
+
+/* sezione senza voci: ridotta */
+.card.vuota { grid-template-columns: minmax(0, 1fr); padding: 14px clamp(18px, 3vw, 32px); }
+.card.vuota .rail { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.card.vuota .letter { font-size: 44px; }
+.card.vuota h2 { font-size: 22px; }
+
+.body { min-width: 0; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 10px; align-items: start; }
+.tile {
+  min-width: 0;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 14px 15px 13px;
+  border-radius: 10px;
+  background: var(--tile);
+  border: 1px solid hsl(var(--h) 24% 40% / .18);
+  scroll-margin-top: 90px;
+}
+.tile.wide { grid-column: 1 / -1; }
+.tile[data-st="ok"] { background: var(--tile-ok); border-color: color-mix(in srgb, var(--ok) 40%, transparent); }
+.tile[data-st="chk"] { background: color-mix(in srgb, var(--warn-bg) 26%, var(--tile-ok)); border: 2px solid var(--warn-bg); padding: 13px 14px 12px; }
+.tile[data-st="na"] {
+  background-color: color-mix(in srgb, var(--na-bg) 20%, var(--tile-ok));
+  border: 2px solid var(--na-bg);
+  padding: 13px 14px 12px;
+}
+.tile:target { outline: 3px solid var(--fgc); outline-offset: 2px; }
+.tile h3 { margin: 0; font: 700 14px/1.25 var(--font-body); letter-spacing: .01em; }
+.tile .val { margin: 0; font-size: 15px; line-height: 1.4; overflow-wrap: anywhere; }
+.tile .lab { margin: 4px 0 -2px; font: 500 11px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--mutc); }
+.tile .lab:first-of-type { margin-top: 0; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; margin-top: 2px; }
+.ref { font: 400 12px/1.3 var(--font-mono); color: var(--mutc); min-width: 0; overflow-wrap: anywhere; }
+.det { margin: 0; font-size: 13px; color: var(--mutc); overflow-wrap: anywhere; }
+.det a { color: inherit; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+  padding: 4px 11px 4px 9px; border-radius: 999px;
+  font: 700 12px/1.2 var(--font-body);
+  border: 1.5px solid transparent;
+}
+.chip::before { content: ""; width: 9px; height: 9px; flex: none; background: currentColor; }
+.chip.ok { background: var(--ok-bg); color: var(--ok-fg); }
+.chip.ok::before { border-radius: 50%; }
+.chip.chk { background: var(--warn-bg); color: var(--warn-fg); }
+.chip.chk::before { clip-path: polygon(50% 0, 100% 100%, 0 100%); width: 10px; height: 9px; }
+.chip.na { background: var(--na-bg); color: var(--na-fg); }
+.chip.na::before { background: none; border: 1.5px solid currentColor; border-radius: 50%; }
+
+.gl { display: inline-block; width: 10px; height: 10px; flex: none; }
+.gl.ok { background: var(--ok); border-radius: 50%; }
+.gl.chk { background: var(--warn); clip-path: polygon(50% 0, 100% 100%, 0 100%); height: 10px; }
+.gl.na { border: 1.5px solid var(--na); border-radius: 50%; }
+
+.grp { grid-column: 1 / -1; display: flex; align-items: center; gap: 9px; margin-top: 8px; font: 500 12px/1 var(--font-mono); letter-spacing: .07em; text-transform: uppercase; }
+.grp:first-child { margin-top: 0; }
+.grp b { font-weight: 600; }
+.grp::after { content: ""; flex: 1; border-top: 2px solid currentColor; opacity: .45; }
+.grp.ok { color: var(--ok); }
+.grp.chk { color: var(--warn); }
+.grp.na { color: var(--na); }
+
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 10px 22px; margin: 22px 0 0; padding: 14px 0 0; list-style: none; border-top: 1px solid var(--btn-line); font-size: 14px; color: var(--muted); }
+.legend li { display: grid; grid-template-columns: 10px minmax(0, 1fr); gap: 4px 10px; align-items: baseline; }
+.legend b { color: var(--fg); font-weight: 700; }
+
+details { margin-top: 2px; }
+summary { cursor: pointer; font: 500 12px/1.4 var(--font-mono); color: var(--mutc); letter-spacing: .02em; list-style: none; width: fit-content; padding: 2px 0; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "+"; display: inline-block; width: 1.2em; }
+details[open] summary::before { content: "\2212"; }
+summary:hover { color: var(--fgc); }
+.q { margin-top: 6px; padding-top: 8px; border-top: 1px solid hsl(var(--h) 24% 40% / .22); display: flex; flex-direction: column; gap: 10px; }
+.q p { margin: 0; font: 400 12.5px/1.5 var(--font-mono); color: var(--fgc); overflow-wrap: anywhere; }
+.q .orig { display: block; margin-top: 3px; font: 500 11px/1.3 var(--font-mono); color: var(--mutc); }
+.q .orig.no { color: var(--na); font-weight: 700; }
+
+.pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 0; padding: 0; list-style: none; }
+.pills li { padding: 5px 10px; border-radius: 999px; font-size: 13px; background: var(--chip); border: 1px solid color-mix(in srgb, var(--na-bg) 55%, transparent); }
+.pills a { color: inherit; text-decoration: none; }
+
+.foot { margin: 26px 0 0; max-width: 78ch; font-size: 13.5px; color: var(--muted); }
+
+/* dati della scheda in testata */
+.dati { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 18px 0 0; }
+.dati label { display: flex; flex-direction: column; gap: 4px; font: 500 11px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); min-width: 0; flex: 1 1 180px; max-width: 320px; }
+input[type="text"], input[type="password"], select {
+  font: 500 15px/1.3 var(--font-body); color: var(--fg); background: var(--field);
+  border: 1px solid var(--btn-line); border-radius: 8px; padding: 8px 10px; min-width: 0; width: 100%;
+}
+input:focus-visible, select:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; }
+
+/* avvisi */
+.avviso { margin: 14px 0 0; padding: 12px 14px; border-radius: 10px; font-size: 14.5px; background: var(--info-bg); border: 1px solid color-mix(in srgb, var(--warn) 60%, transparent); }
+.avviso.errore { background: var(--err-bg); border-color: color-mix(in srgb, var(--err) 60%, transparent); color: var(--fg); }
+.avviso b { display: block; margin-bottom: 2px; }
+
+/* apertura */
+.pannelli { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 18px; margin-top: 22px; }
+.pannello { background: var(--panel); border: 1px solid var(--btn-line); border-radius: 16px; padding: clamp(16px, 3vw, 26px); display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.pannello h2 { margin: 0; font: 700 28px/1 var(--font-display); text-transform: uppercase; }
+.pannello p { margin: 0; color: var(--muted); font-size: 15px; }
+.campo { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 14px; }
+.campo small { font-weight: 400; color: var(--muted); }
+.accesso { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px 18px; margin-top: 18px; max-width: 760px; }
+.file-elenco { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.file-elenco li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 170px); gap: 8px; align-items: center; font-size: 14px; }
+.file-elenco li span { overflow-wrap: anywhere; }
+input[type="file"] { font: 14px var(--font-body); color: var(--fg); max-width: 100%; }
+
+/* avanzamento */
+.passi { margin: 18px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; max-width: 760px; }
+.passi li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 10px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--btn-line); font-size: 15px; }
+.passi li .t { font: 400 12.5px var(--font-mono); color: var(--muted); }
+.passi li[data-st="corso"] { border-color: var(--fg); }
+.passi li[data-st="fatto"] .i::before { content: "✓"; color: var(--ok); font-weight: 700; }
+.passi li[data-st="corso"] .i::before { content: "…"; font-weight: 700; }
+.passi li[data-st="attesa"] .i::before { content: "·"; color: var(--muted); }
+.passi li[data-st="diviso"] .i::before { content: "↳"; color: var(--warn); }
+.passi li[data-st="errore"] .i::before { content: "✕"; color: var(--err); }
+.passi li[data-st="incompleto"] .i::before { content: "!"; color: var(--warn); font-weight: 700; }
+
+@media (max-width: 900px) {
+  .card { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .rail { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 18px; row-gap: 6px; align-items: end; }
+  .letter { grid-row: 1 / span 2; font-size: 92px; }
+  .card h2 { font-size: 26px; align-self: end; }
+  .counts { grid-column: 2; flex-direction: row; flex-wrap: wrap; gap: 6px 12px; margin: 0; }
+  .rail-note { grid-column: 2; }
+  .card.vuota .rail { display: flex; }
+}
+@media (max-width: 700px) {
+  .bar { position: static; }
+  .top { padding-top: 28px; }
+}
+@media (min-width: 901px) {
+  .card:not(.vuota) .rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 74px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nav-l, .filters button, .btn { transition: border-color .15s, background-color .15s; }
+}
+
+/* ── Stati nati dalle risposte del PM ───────────────────────────────────── */
+:root {
+  --pm: #1d4ed8; --pm-bg: #1d4ed8; --pm-fg: #ffffff;
+  --att: #6d28d9; --att-bg: #6d28d9; --att-fg: #ffffff;
+  --nap: #475467; --nap-bg: #667085; --nap-fg: #ffffff;
+  --ombra: 0 10px 40px hsl(222 30% 10% / .22);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --pm: #93c5fd; --pm-bg: #93c5fd; --pm-fg: #0b1a33;
+    --att: #c4b5fd; --att-bg: #c4b5fd; --att-fg: #1e0b3d;
+    --nap: #cbd5e1; --nap-bg: #94a3b8; --nap-fg: #0f172a;
+    --ombra: 0 10px 40px hsl(0 0% 0% / .55);
+  }
+}
+:root[data-theme="dark"] {
+  --pm: #93c5fd; --pm-bg: #93c5fd; --pm-fg: #0b1a33;
+  --att: #c4b5fd; --att-bg: #c4b5fd; --att-fg: #1e0b3d;
+  --nap: #cbd5e1; --nap-bg: #94a3b8; --nap-fg: #0f172a;
+  --ombra: 0 10px 40px hsl(0 0% 0% / .55);
+}
+.chip.pm { background: var(--pm-bg); color: var(--pm-fg); }
+.chip.pm::before { border-radius: 1px; }
+.chip.att { background: var(--att-bg); color: var(--att-fg); }
+.chip.att::before { width: 8px; height: 8px; transform: rotate(45deg); }
+.chip.nap { background: var(--nap-bg); color: var(--nap-fg); }
+.chip.nap::before { height: 3px; width: 10px; }
+.gl.pm { background: var(--pm); }
+.gl.att { width: 9px; height: 9px; background: var(--att); transform: rotate(45deg); }
+.gl.nap { height: 3px; background: var(--nap); align-self: center; }
+.grp.pm { color: var(--pm); }
+.grp.att { color: var(--att); }
+.grp.nap { color: var(--nap); }
+.tile[data-st="pm"] { background: color-mix(in srgb, var(--pm-bg) 14%, var(--tile-ok)); border: 2px solid var(--pm-bg); padding: 13px 14px 12px; }
+.tile[data-st="att"] { background: color-mix(in srgb, var(--att-bg) 14%, var(--tile-ok)); border: 2px dashed var(--att-bg); padding: 13px 14px 12px; }
+.tile[data-st="nap"] { background: var(--tile); border: 1px dashed var(--nap-bg); opacity: .85; }
+.risposta { margin: 2px 0 0; padding: 6px 0 2px 10px; border-left: 3px solid var(--pm); display: flex; flex-direction: column; gap: 2px; }
+.tile[data-st="att"] .risposta { border-left-color: var(--att); }
+.tile[data-st="nap"] .risposta { border-left-color: var(--nap); }
+.risposta .chi { font: 500 11.5px/1.35 var(--font-mono); color: var(--mutc); overflow-wrap: anywhere; }
+.azioni-tile { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.btn.piccolo { padding: 6px 11px; font-size: 13px; }
+.btn.testo { background: none; border-color: transparent; padding-inline: 4px; text-decoration: underline; color: inherit; }
+.indicatore { font: 500 12px/1.2 var(--font-mono); color: var(--warn); align-self: center; }
+.indicatore.salvato { color: var(--ok); }
+
+/* ── Chat laterale ──────────────────────────────────────────────────────── */
+#chat {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 40;
+  width: min(440px, 100vw);
+  display: flex; flex-direction: column;
+  background: var(--panel); color: var(--fg);
+  border-left: 1px solid var(--btn-line); box-shadow: var(--ombra);
+}
+@media (min-width: 1100px) { body.chat-aperta { padding-right: 456px; } }
+.chat-testa { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--btn-line); }
+.chat-testa h2 { margin: 0; font: 700 22px/1 var(--font-display); text-transform: uppercase; }
+.chat-testa .t { font: 500 12px var(--font-mono); color: var(--muted); }
+.chat-corpo { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.chat-voce { padding: 12px; border-radius: 10px; background: var(--bg); display: flex; flex-direction: column; gap: 6px; font-size: 14.5px; }
+.chat-voce h3 { margin: 0; font: 700 15px/1.3 var(--font-body); }
+.chat-voce .lab { margin: 4px 0 -2px; font: 500 11px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.chat-voce p { margin: 0; overflow-wrap: anywhere; }
+.chat-voce .cit { font: 400 12.5px/1.5 var(--font-mono); }
+.msg { max-width: 92%; padding: 9px 12px; border-radius: 12px; font-size: 14.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.pm { align-self: flex-end; background: var(--btn-on); color: var(--btn-on-fg); border-bottom-right-radius: 4px; }
+.msg.assistente { align-self: flex-start; background: var(--bg); border-bottom-left-radius: 4px; }
+.msg.sistema { align-self: center; font: 500 12px/1.4 var(--font-mono); color: var(--muted); background: none; padding: 2px; text-align: center; }
+.proposta { border: 2px solid var(--pm); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; }
+.proposta b { font: 500 11px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.proposta .azioni-tile { margin-top: 4px; }
+.domanda { border: 1px dashed var(--btn-line); border-radius: 10px; padding: 10px 12px; font: 400 13px/1.5 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.chat-piede { border-top: 1px solid var(--btn-line); padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+.chat-piede textarea { font: 15px/1.4 var(--font-body); color: var(--fg); background: var(--field); border: 1px solid var(--btn-line); border-radius: 8px; padding: 8px 10px; resize: vertical; min-height: 64px; width: 100%; }
+.chat-piede textarea:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; }
+.riga { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* ── Dialoghi ───────────────────────────────────────────────────────────── */
+dialog { border: 1px solid var(--btn-line); border-radius: 16px; padding: 22px; background: var(--panel); color: var(--fg); max-width: min(560px, calc(100vw - 32px)); box-shadow: var(--ombra); }
+dialog::backdrop { background: hsl(222 20% 10% / .45); }
+dialog h2 { margin: 0 0 8px; font: 700 26px/1 var(--font-display); text-transform: uppercase; }
+dialog p { margin: 0 0 14px; color: var(--muted); }
+dialog .riga { margin-top: 16px; }
+
+/* ── PDF di consegna (stampa del browser) ───────────────────────────────── */
+.solo-stampa { display: none; }
+.consegna { margin: 0 0 18px; display: flex; flex-direction: column; gap: 10px; }
+.consegna .dicitura { margin: 0; font: 500 12px/1.3 var(--font-mono); color: var(--muted); }
+.consegna .mancanti { margin: 0; padding: 10px 12px; border: 2px solid var(--na-bg); border-radius: 8px; color: var(--na); font: 700 16px/1.3 var(--font-body); }
+.consegna .versione { margin: 0; font: 800 34px/1 var(--font-display); text-transform: uppercase; }
+.consegna .versione.bozza { color: var(--warn); }
+.consegna .versione small { display: block; margin-top: 4px; font: 500 13px/1.3 var(--font-body); text-transform: none; color: var(--muted); }
+.consegna table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.consegna th { text-align: left; font: 500 11px/1.3 var(--font-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 4px 12px 4px 0; vertical-align: top; width: 150px; }
+.consegna td { padding: 4px 0; vertical-align: top; overflow-wrap: anywhere; }
+.consegna .conteggi { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.consegna .conteggi li { display: inline-flex; align-items: center; gap: 6px; }
+
+@page { size: A4; margin: 12mm; }
+@media print {
+  /* In stampa vale sempre il tema chiaro, con i colori di stato forzati */
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    --bg: #ffffff; --fg: hsl(222 20% 14%); --muted: hsl(222 10% 38%);
+    --btn-line: hsl(220 10% 78%); --panel: #ffffff; --field: #ffffff;
+    --card-l: 93%; --card-fg-l: 13%; --card-mut-l: 34%; --card-ac-l: 31%;
+    --tile: hsl(0 0% 100% / .7); --chip: hsl(0 0% 100% / .9); --tile-ok: hsl(0 0% 100% / .88);
+    --ok: #15803d; --warn: #92400e; --na: #b42318; --na-bg: #d92d20; --na-fg: #ffffff;
+    --ok-bg: #15803d; --ok-fg: #ffffff; --warn-bg: #f5a524; --warn-fg: #2b1a00;
+    --pm: #1d4ed8; --pm-bg: #1d4ed8; --pm-fg: #ffffff;
+    --att: #6d28d9; --att-bg: #6d28d9; --att-fg: #ffffff;
+    --nap: #475467; --nap-bg: #667085; --nap-fg: #ffffff;
+    color-scheme: light;
+  }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { background: #ffffff !important; padding: 0 !important; }
+  body { font-size: 13px; }
+  .wrap { max-width: none; }
+  .solo-stampa { display: block; }
+  #apertura, #lavoro, #chat, dialog, .bar, .dati, #avvisi-scheda, .azioni-tile, .vista-eyebrow, summary { display: none !important; }
+  .top { padding: 0 0 12px; }
+  h1 { font-size: 44px; }
+  .sub { font-size: 14px; margin-top: 8px; }
+  .legend { margin-top: 12px; font-size: 12px; }
+  .facts, .vista-eyebrow + h1 + .sub { display: none !important; }
+  .cards { display: block; margin-top: 8px; }
+  /* Scheda come blocco: intestazione su una riga, tessere su due colonne che
+     scorrono da una pagina all'altra senza lasciare vuoti */
+  .card, .card.vuota { display: block; padding: 10px 12px; border-radius: 8px; margin: 0 0 8px; }
+  .card .rail, .card:not(.vuota) .rail { position: static; display: flex; flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 8px; break-after: avoid; }
+  .letter, .card.vuota .letter { font-size: 34px; line-height: 1; }
+  .card h2, .card.vuota h2 { font-size: 19px; }
+  .counts { flex-direction: row; flex-wrap: wrap; gap: 4px 10px; margin: 0; }
+  .counts .chip { padding: 2px 8px 2px 7px; font-size: 10.5px; }
+  .counts b { font-size: 14px; }
+  .tiles { display: block; column-count: 2; column-gap: 8px; }
+  .tile { display: flex; break-inside: avoid; padding: 7px 9px; margin: 0 0 6px; gap: 3px; }
+  .tile.wide, .grp { column-span: all; }
+  .grp { margin: 4px 0 6px; }
+  .tile h3 { font-size: 12px; }
+  .tile .val { font-size: 12.5px; }
+  .det, .ref { font-size: 10.5px; }
+  .chip { font-size: 10.5px; padding: 2px 8px 2px 7px; }
+  .tile:target { outline: none; }
+  .grp { break-after: avoid; }
+  .q { border-top: 0; padding-top: 2px; }
+  .q p { font-size: 10.5px; }
+  details > *:not(summary) { display: block !important; }
+  a { color: inherit !important; text-decoration: none !important; }
+  body.chat-aperta { padding-right: 0 !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ═══ Apertura: accesso, scheda nuova o ripresa ═══════════════════════ -->
+  <section id="apertura">
+    <header class="top">
+      <p class="eyebrow">WES · uso interno</p>
+      <h1>Scheda regolamenti <span>fiera</span></h1>
+      <p class="sub">Carica i regolamenti tecnici della fiera: l'app estrae le prescrizioni che vincolano la progettazione dello stand e verifica ogni citazione nel PDF.</p>
+      <div class="accesso">
+        <label class="campo">Nome e cognome
+          <input type="text" id="nome-pm" autocomplete="name" placeholder="Nome Cognome">
+          <small>Serve ad attribuire le risposte, non è un'autenticazione.</small>
+        </label>
+        <label class="campo">Codice d'accesso
+          <input type="password" id="codice" autocomplete="off" placeholder="Codice concordato">
+          <small>Lo inserisci una volta sola: resta in questo browser.</small>
+        </label>
+      </div>
+      <div id="avviso-apertura" class="avviso errore" role="alert" hidden></div>
+      <div id="recupero" class="avviso" hidden>
+        <b>Scheda salvata automaticamente in questo browser</b>
+        <span id="recupero-testo"></span>
+        <div class="riga" style="margin-top:8px">
+          <button type="button" class="btn primary piccolo" id="recupera">Recupera</button>
+          <button type="button" class="btn piccolo" id="scarta-recupero">Scarta</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="pannelli">
+      <form class="pannello" id="form-nuova">
+        <h2>Scheda nuova</h2>
+        <p>Carica uno o più PDF: regolamento dell'ente fiera e/o dell'organizzatore.</p>
+        <label class="campo">Nome della fiera <small>Facoltativo, si può cambiare dopo.</small>
+          <input type="text" id="nome-fiera" placeholder="Es. NPE2027">
+        </label>
+        <label class="campo">Regolamenti (PDF)
+          <input type="file" id="pdf-nuova" accept="application/pdf,.pdf" multiple>
+        </label>
+        <ul class="file-elenco" id="elenco-nuova"></ul>
+        <div><button type="submit" class="btn primary" id="avvia-nuova" disabled>Estrai le prescrizioni</button></div>
+      </form>
+
+      <form class="pannello" id="form-ripresa">
+        <h2>Riprendi un lavoro</h2>
+        <p>Carica il file di lavoro (.json) salvato in precedenza. Per riprendere serve quel file, non il PDF di consegna.</p>
+        <label class="campo">File di lavoro (.json)
+          <input type="file" id="json-ripresa" accept=".json,application/json">
+        </label>
+        <label class="campo">Regolamenti da aggiungere o ricaricare (PDF) <small>Facoltativo: nuovi regolamenti da fondere nella scheda, oppure gli stessi PDF per ripetere la verifica delle citazioni.</small>
+          <input type="file" id="pdf-ripresa" accept="application/pdf,.pdf" multiple>
+        </label>
+        <ul class="file-elenco" id="elenco-ripresa"></ul>
+        <div><button type="submit" class="btn primary" id="avvia-ripresa" disabled>Riprendi</button></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ═══ Avanzamento della lettura e dell'estrazione ═════════════════════ -->
+  <section id="lavoro" hidden>
+    <header class="top">
+      <p class="eyebrow">Lavoro in corso</p>
+      <h1 id="lavoro-titolo">Lettura <span>dei regolamenti</span></h1>
+      <p class="sub">Le pagine con testo illeggibile vengono lette per via ottica: su un regolamento scansionato può richiedere qualche minuto. Non chiudere la pagina.</p>
+    </header>
+    <ol class="passi" id="passi"></ol>
+    <div id="avviso-lavoro" class="avviso errore" role="alert" hidden></div>
+    <p><button type="button" class="btn" id="torna-lavoro" hidden>Torna indietro</button></p>
+  </section>
+
+  <!-- ═══ Scheda aperta ════════════════════════════════════════════════════ -->
+  <section id="vista" hidden>
+    <header class="top">
+      <div id="stampa-testa" class="solo-stampa consegna"></div>
+      <p class="eyebrow vista-eyebrow">WES · Scheda prescrizioni tecniche</p>
+      <h1 id="titolo-fiera"></h1>
+      <p class="sub">Prescrizioni tecniche che vincolano la progettazione dello stand, una scheda per sezione.</p>
+      <ul class="facts" id="fatti"></ul>
+      <div class="dati">
+        <label>Fiera <input type="text" id="campo-fiera"></label>
+        <label>Date <input type="text" id="campo-date" placeholder="es. 3-7 maggio 2027"></label>
+        <label>Numero commessa <input type="text" id="campo-commessa" placeholder="001-2027"></label>
+        <label>Nome PM <input type="text" id="campo-pm"></label>
+      </div>
+      <div id="avvisi-scheda"></div>
+      <ul class="legend" aria-label="Legenda degli stati">
+        <li><span class="gl ok"></span><span><b>Confermato.</b> La citazione contiene il dato ed è stata ritrovata dal software nel PDF.</span></li>
+        <li><span class="gl chk"></span><span><b>Da verificare.</b> Passaggio ambiguo, condizionato, da comporre con altri o citazione non ritrovata.</span></li>
+        <li><span class="gl na"></span><span><b>Non specificato.</b> Le fonti non trattano il parametro.</span></li>
+        <li><span class="gl pm"></span><span><b>Chiarito dal PM.</b> Valore fornito dal PM con la sua fonte: non viene dal regolamento.</span></li>
+        <li><span class="gl att"></span><span><b>In attesa.</b> Domanda aperta con un interlocutore esterno.</span></li>
+        <li><span class="gl nap"></span><span><b>Non applicabile.</b> Il parametro non riguarda il progetto.</span></li>
+      </ul>
+    </header>
+
+    <div class="bar" role="navigation" aria-label="Sezioni e filtri">
+      <nav class="nav" id="nav" aria-label="Vai alla sezione"></nav>
+      <div class="filters" role="group" aria-label="Filtra per stato" id="filtri"></div>
+      <div class="tools">
+        <button type="button" class="btn primary" id="apri-chat">Voci aperte</button>
+        <button type="button" class="btn" id="salva">Salva file di lavoro</button>
+        <button type="button" class="btn" id="stampa">Stampa / PDF</button>
+        <span class="indicatore" id="indicatore" aria-live="polite"></span>
+        <button type="button" class="btn" id="aggiungi">Aggiungi o ricarica regolamenti</button>
+        <button type="button" class="btn" id="tema" title="Tema chiaro o scuro">Tema: automatico</button>
+        <button type="button" class="btn" id="chiudi-scheda">Chiudi scheda</button>
+      </div>
+    </div>
+
+    <main class="cards" id="cards"></main>
+    <p class="foot" id="piede"></p>
+  </section>
+</div>
+
+<!-- ═══ Chat di risoluzione ═══════════════════════════════════════════════ -->
+<aside id="chat" hidden aria-label="Chat sulle voci aperte">
+  <div class="chat-testa">
+    <div><h2>Voci aperte</h2><span class="t" id="chat-posizione"></span></div>
+    <button type="button" class="btn piccolo" id="chiudi-chat" aria-label="Chiudi la chat">Chiudi</button>
+  </div>
+  <div class="chat-corpo" id="chat-corpo" aria-live="polite"></div>
+  <form class="chat-piede" id="chat-form">
+    <div class="riga">
+      <button type="button" class="btn piccolo" data-azione="na">Non applicabile</button>
+      <button type="button" class="btn piccolo" data-azione="attesa">In attesa…</button>
+      <button type="button" class="btn piccolo" data-azione="domanda">Domanda per l'ente</button>
+      <button type="button" class="btn piccolo" data-azione="indietro">← Precedente</button>
+      <button type="button" class="btn piccolo" data-azione="salta">Salta →</button>
+    </div>
+    <textarea id="chat-testo" placeholder="Scrivi il valore e la fonte (es. 6 m, mail dell'ente fiera del 12/11)" aria-label="Risposta del PM"></textarea>
+    <div class="riga"><button type="submit" class="btn primary" id="chat-invia">Invia</button></div>
+  </form>
+</aside>
+
+<!-- ═══ Dialoghi ══════════════════════════════════════════════════════════ -->
+<dialog id="dialogo-uscita" aria-labelledby="uscita-t">
+  <h2 id="uscita-t">Modifiche non salvate</h2>
+  <p>Questa scheda ha modifiche che non sono nel file di lavoro. Se esci senza salvarle, resta solo la copia automatica in questo browser.</p>
+  <div class="riga">
+    <button type="button" class="btn primary" value="salva">Salva il file di lavoro</button>
+    <button type="button" class="btn" value="esci">Esci senza salvare</button>
+    <button type="button" class="btn" value="annulla">Annulla</button>
+  </div>
+</dialog>
+
+<dialog id="dialogo-regolamenti" aria-labelledby="regolamenti-t">
+  <h2 id="regolamenti-t">Aggiungi o ricarica regolamenti</h2>
+  <p>Un PDF già presente nella scheda ripete la verifica delle citazioni. Un PDF nuovo viene estratto e fuso con la scheda: le risposte già date non si toccano.</p>
+  <input type="file" id="pdf-aggiungi" accept="application/pdf,.pdf" multiple>
+  <ul class="file-elenco" id="elenco-aggiungi" style="margin-top:12px"></ul>
+  <div class="riga">
+    <button type="button" class="btn primary" id="conferma-aggiungi" disabled>Procedi</button>
+    <button type="button" class="btn" id="annulla-aggiungi">Annulla</button>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Configurazione ───────────────────────────────────────────────────────
+  // La pagina è servita dal servizio stesso: le chiamate vanno allo stesso
+  // indirizzo. Aperta da disco, usa il servizio pubblicato (o quello indicato
+  // con localStorage.setItem('wes-regolamenti-endpoint', 'http://localhost:3000')).
+  var ENDPOINT_PREDEFINITO = 'https://wes-scheda-regolamenti.onrender.com';
+  var CHIAVE_CODICE = 'wes-regolamenti-codice';
+  var CHIAVE_NOME = 'wes-regolamenti-nome';
+  var CHIAVE_TEMA = 'wes-regolamenti-tema';
+  var CHIAVE_AUTO = 'wes-regolamenti-autosalvataggio';
+  var FORMATO_COMMESSA = /^\d{3}-\d{4}$/;
+
+  function endpoint() {
+    var salvato = leggiLocale('wes-regolamenti-endpoint');
+    if (salvato) return salvato.replace(/\/+$/, '');
+    return location.protocol.indexOf('http') === 0 ? '' : ENDPOINT_PREDEFINITO;
+  }
+
+  // Tinte delle schede (dal design di riferimento)
+  var TINTE = {
+    A: [214, 46], B: [18, 58], C: [150, 36], D: [268, 40], E: [338, 42],
+    F: [88, 36], G: [300, 34], H: [186, 40], I: [240, 38], J: [30, 24], V: [222, 8]
+  };
+  // Tre stati nascono dall'estrazione, tre dalle risposte del PM. Una risposta
+  // del PM non rende mai una voce "Confermato": resta un campo a parte.
+  var STATI = {
+    confermato: { k: 'ok', nome: 'Confermato', ordine: 0 },
+    chiarito: { k: 'pm', nome: 'Chiarito dal PM', ordine: 1 },
+    da_verificare: { k: 'chk', nome: 'Da verificare', ordine: 2 },
+    in_attesa: { k: 'att', nome: 'In attesa', ordine: 3 },
+    non_specificato: { k: 'na', nome: 'Non specificato', ordine: 4 },
+    non_applicabile: { k: 'nap', nome: 'Non applicabile', ordine: 5 }
+  };
+  var ORDINE_FILTRI = ['confermato', 'chiarito', 'da_verificare', 'in_attesa', 'non_specificato', 'non_applicabile'];
+  var RUOLI = { ente: 'Ente fiera', organizzatore: 'Organizzatore', altro: 'Altra fonte' };
+
+  var stato = { config: null, scheda: null, filtro: 'all', avvisi: [], sporca: false, utente: '' };
+
+  // ── Utilità ──────────────────────────────────────────────────────────────
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function leggiLocale(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function scriviLocale(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+  function mostra(id) { ['apertura', 'lavoro', 'vista'].forEach(function (s) { $(s).hidden = s !== id; }); if (id !== 'vista') chiudiChat(); window.scrollTo(0, 0); }
+  function avviso(el, testo, titolo) {
+    if (!testo) { el.hidden = true; el.innerHTML = ''; return; }
+    el.innerHTML = (titolo ? '<b>' + esc(titolo) + '</b>' : '') + esc(testo);
+    el.hidden = false;
+  }
+  function leggiBase64(file) {
+    return new Promise(function (risolvi, rifiuta) {
+      var lettore = new FileReader();
+      lettore.onerror = function () { rifiuta(new Error('Non sono riuscito a leggere il file «' + file.name + '».')); };
+      lettore.onload = function () { var r = String(lettore.result); risolvi(r.slice(r.indexOf(',') + 1)); };
+      lettore.readAsDataURL(file);
+    });
+  }
+  function leggiTesto(file) {
+    return new Promise(function (risolvi, rifiuta) {
+      var lettore = new FileReader();
+      lettore.onerror = function () { rifiuta(new Error('Non sono riuscito a leggere il file.')); };
+      lettore.onload = function () { risolvi(String(lettore.result)); };
+      lettore.readAsText(file, 'utf-8');
+    });
+  }
+  function slugCitazione(t) { return String(t || '').toLowerCase().replace(/[\s‐-―−-]+/g, ''); }
+  function adesso() { return new Date().toISOString(); }
+  function dataBreve(iso) {
+    var d = new Date(iso);
+    return isNaN(d) ? '' : d.toLocaleDateString('it-IT') + ' ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  }
+  function voce(id) { return stato.scheda.voci.filter(function (v) { return v.id === id; })[0]; }
+
+  // Stato con cui la voce si mostra: la risposta del PM, se c'è, prevale sulla
+  // vista (mai su una voce confermata dal codice), lo stato estratto resta.
+  function eStato(k) { return typeof k === 'string' && Object.prototype.hasOwnProperty.call(STATI, k); }
+  function statoEffettivo(v) {
+    if (v.chiarimento && eStato(v.chiarimento.tipo) && ['chiarito', 'in_attesa', 'non_applicabile'].indexOf(v.chiarimento.tipo) >= 0 && v.stato !== 'confermato') return v.chiarimento.tipo;
+    return ['confermato', 'da_verificare', 'non_specificato'].indexOf(v.stato) >= 0 ? v.stato : 'da_verificare';
+  }
+  function eAperta(v) { var s = statoEffettivo(v); return s === 'da_verificare' || s === 'non_specificato'; }
+
+  // ── Chiamate al servizio ─────────────────────────────────────────────────
+  function ErroreServizio(messaggio, codiceHttp, codice) { this.message = messaggio; this.stato = codiceHttp; this.codice = codice; }
+  ErroreServizio.prototype = Object.create(Error.prototype);
+
+  async function chiama(percorso, corpo) {
+    var intestazioni = { 'Content-Type': 'application/json' };
+    var codice = leggiLocale(CHIAVE_CODICE);
+    if (codice) intestazioni['X-Codice-Accesso'] = codice;
+    var risposta;
+    try {
+      risposta = await fetch(endpoint() + percorso, {
+        method: corpo === undefined ? 'GET' : 'POST',
+        headers: intestazioni,
+        body: corpo === undefined ? undefined : JSON.stringify(corpo)
+      });
+    } catch (e) {
+      throw new ErroreServizio('Il servizio non risponde. Controlla la connessione e riprova.', 0);
+    }
+    var dati = {};
+    try { dati = await risposta.json(); } catch (e) { /* risposta non JSON */ }
+    if (!risposta.ok) {
+      if (risposta.status === 401) scriviLocale(CHIAVE_CODICE, null);
+      throw new ErroreServizio(dati.errore || ('Il servizio ha risposto con un errore (' + risposta.status + ').'), risposta.status, dati.codice);
+    }
+    return dati;
+  }
+
+  // Sul piano gratuito di Render l'istanza si sospende: la si sveglia appena
+  // il PM sceglie un file, così è pronta quando parte il lavoro.
+  var svegliato = false;
+  function svegliaServizio() {
+    if (svegliato) return;
+    svegliato = true;
+    fetch(endpoint() + '/health').catch(function () {});
+  }
+
+  async function caricaConfigurazione() {
+    if (!stato.config) stato.config = await chiama('/api/configurazione');
+    return stato.config;
+  }
+
+  // ── Modifiche, autosalvataggio, avviso di uscita ─────────────────────────
+  // La copia che conta è il file di lavoro. La memoria del browser è solo una
+  // rete di sicurezza contro la chiusura accidentale.
+  function segnaModifica() {
+    if (!stato.scheda) return;
+    stato.sporca = true;
+    stato.scheda.aggiornata = { da: stato.utente, il: adesso() };
+    autosalva();
+    aggiornaIndicatore();
+  }
+  function autosalva() {
+    if (!stato.scheda) return;
+    var ok = scriviLocale(CHIAVE_AUTO, JSON.stringify({ il: adesso(), scheda: stato.scheda }));
+    if (!ok) console.warn('Autosalvataggio non riuscito: memoria del browser non disponibile o piena.');
+  }
+  function aggiornaIndicatore() {
+    var el = $('indicatore');
+    if (!stato.scheda) { el.textContent = ''; return; }
+    el.textContent = stato.sporca ? '● Modifiche non salvate nel file di lavoro' : '✓ File di lavoro aggiornato';
+    el.classList.toggle('salvato', !stato.sporca);
+  }
+  window.addEventListener('beforeunload', function (e) {
+    if (stato.scheda && stato.sporca) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  // Avviso interno con tre scelte, per le azioni che abbandonano la scheda
+  function chiediUscita() {
+    if (!stato.scheda || !stato.sporca) return Promise.resolve('esci');
+    var d = $('dialogo-uscita');
+    return new Promise(function (risolvi) {
+      function fine(valore) {
+        d.removeEventListener('click', scelta);
+        d.removeEventListener('cancel', annulla);
+        if (d.open) d.close();
+        risolvi(valore);
+      }
+      function scelta(e) {
+        var b = e.target.closest('button[value]');
+        if (b) fine(b.value);
+      }
+      function annulla(e) { e.preventDefault(); fine('annulla'); }
+      d.addEventListener('click', scelta);
+      d.addEventListener('cancel', annulla);
+      d.showModal();
+    });
+  }
+
+  // ── Campi obbligatori e file di lavoro ───────────────────────────────────
+  function controllaObbligatori(azione) {
+    var pm = $('campo-pm').value.trim();
+    var commessa = $('campo-commessa').value.trim();
+    if (!pm) {
+      alert('Per ' + azione + ' serve il nome del PM. Compila il campo "Nome PM".');
+      $('campo-pm').focus();
+      return false;
+    }
+    if (!FORMATO_COMMESSA.test(commessa)) {
+      alert((commessa ? 'Il numero di commessa "' + commessa + '" non ha il formato corretto. ' : 'Per ' + azione + ' serve il numero di commessa. ') +
+        'Compila il campo "Numero commessa" con tre cifre, trattino e anno a quattro cifre, per esempio 001-2027.');
+      $('campo-commessa').focus();
+      return false;
+    }
+    return true;
+  }
+
+  function nomeFileLavoro() {
+    var fiera = String(stato.scheda.fiera && stato.scheda.fiera.nome || 'scheda').normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '');
+    return (fiera || 'scheda') + '_' + stato.scheda.commessa.numero + '_bozza.json';
+  }
+
+  function scarica(nome, testo) {
+    var url = URL.createObjectURL(new Blob([testo], { type: 'application/json' }));
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = nome;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  async function salvaFileLavoro() {
+    if (!controllaObbligatori('salvare il file di lavoro')) return false;
+    var bottone = $('salva');
+    bottone.disabled = true;
+    try {
+      var r = await chiama('/api/firma', { scheda: stato.scheda });
+      stato.scheda = r.scheda;
+      scarica(nomeFileLavoro(), JSON.stringify({ formato: r.formato, versione: r.versione, scheda: r.scheda, firma: r.firma }, null, 2));
+      stato.sporca = false;
+      autosalva();
+      if (r.declassate) {
+        stato.avvisi.push({ tipo: 'info', titolo: 'Conferme non riconosciute', testo: r.declassate + ' voci risultavano confermate senza la verifica del servizio e sono state riportate a "Da verificare" nel file salvato.' });
+      }
+      disegnaScheda();
+      return true;
+    } catch (err) {
+      alert('Il file di lavoro non è stato salvato: ' + err.message);
+      return false;
+    } finally {
+      bottone.disabled = false;
+      aggiornaIndicatore();
+    }
+  }
+  $('salva').addEventListener('click', salvaFileLavoro);
+
+  // ── Apertura ─────────────────────────────────────────────────────────────
+  var fileNuova = [];
+  var fileRipresa = [];
+  var fileAggiungi = [];
+
+  function aggiornaApertura() {
+    var pronto = $('nome-pm').value.trim().length > 0 && Boolean($('codice').value.trim() || leggiLocale(CHIAVE_CODICE));
+    $('avvia-nuova').disabled = !pronto || fileNuova.length === 0;
+    $('avvia-ripresa').disabled = !pronto || !$('json-ripresa').files.length;
+    $('recupera').disabled = !pronto;
+  }
+
+  function disegnaElencoFile(id, elenco) {
+    $(id).innerHTML = elenco.map(function (f, i) {
+      return '<li><span>' + esc(f.file.name) + '</span><select data-i="' + i + '" aria-label="Ruolo di ' + esc(f.file.name) + '">' +
+        Object.keys(RUOLI).map(function (r) { return '<option value="' + r + '"' + (f.ruolo === r ? ' selected' : '') + '>' + RUOLI[r] + '</option>'; }).join('') +
+        '</select></li>';
+    }).join('');
+  }
+
+  // Scelta di PDF: solo PDF, ciascuno con il suo ruolo
+  function sceltaPdf(input, idElenco, elAvviso) {
+    var scelti = Array.prototype.slice.call(input.files);
+    var scartati = scelti.filter(function (f) { return !/\.pdf$/i.test(f.name); });
+    var elenco = scelti.filter(function (f) { return /\.pdf$/i.test(f.name); }).map(function (f) { return { file: f, ruolo: 'ente' }; });
+    if (scartati.length && elAvviso) avviso(elAvviso, 'Si accettano solo PDF. Scartati: ' + scartati.map(function (f) { return f.name; }).join(', ') + '.');
+    disegnaElencoFile(idElenco, elenco);
+    if (elenco.length) svegliaServizio();
+    return elenco;
+  }
+  function collegaRuoli(idElenco, prendi) {
+    $(idElenco).addEventListener('change', function (e) {
+      var i = e.target.getAttribute('data-i');
+      if (i != null) prendi()[Number(i)].ruolo = e.target.value;
+    });
+  }
+
+  $('pdf-nuova').addEventListener('change', function () {
+    avviso($('avviso-apertura'), '');
+    fileNuova = sceltaPdf(this, 'elenco-nuova', $('avviso-apertura'));
+    aggiornaApertura();
+  });
+  $('pdf-ripresa').addEventListener('change', function () {
+    avviso($('avviso-apertura'), '');
+    fileRipresa = sceltaPdf(this, 'elenco-ripresa', $('avviso-apertura'));
+    aggiornaApertura();
+  });
+  collegaRuoli('elenco-nuova', function () { return fileNuova; });
+  collegaRuoli('elenco-ripresa', function () { return fileRipresa; });
+
+  $('json-ripresa').addEventListener('change', function () {
+    avviso($('avviso-apertura'), '');
+    var f = this.files[0];
+    if (f && /\.pdf$/i.test(f.name)) {
+      avviso($('avviso-apertura'), 'Questo è il PDF di consegna. Per riprendere il lavoro carica il file di lavoro (.json)');
+      this.value = '';
+    }
+    if (f) svegliaServizio();
+    aggiornaApertura();
+  });
+  ['nome-pm', 'codice'].forEach(function (id) { $(id).addEventListener('input', aggiornaApertura); });
+
+  function salvaAccesso() {
+    var nome = $('nome-pm').value.trim();
+    var codice = $('codice').value.trim();
+    scriviLocale(CHIAVE_NOME, nome);
+    if (codice) scriviLocale(CHIAVE_CODICE, codice);
+    stato.utente = nome;
+    return nome;
+  }
+
+  function erroreApertura(err) {
+    mostra('apertura');
+    if (err && err.stato === 401) {
+      $('codice').value = '';
+      $('codice').placeholder = 'Codice concordato';
+      avviso($('avviso-apertura'), 'Codice d\'accesso mancante o errato. Inseriscilo di nuovo.', 'Accesso non riuscito');
+      $('codice').focus();
+    } else {
+      avviso($('avviso-apertura'), (err && err.message) || 'Errore imprevisto.');
+    }
+    aggiornaApertura();
+  }
+
+  // Recupero dell'autosalvataggio del browser
+  function mostraRecupero() {
+    var dati = null;
+    try { dati = JSON.parse(leggiLocale(CHIAVE_AUTO) || 'null'); } catch (e) { dati = null; }
+    if (!dati || !dati.scheda || !Array.isArray(dati.scheda.voci)) { $('recupero').hidden = true; return; }
+    var s = dati.scheda;
+    $('recupero-testo').textContent = ((s.fiera && s.fiera.nome) || 'Scheda senza nome') +
+      (s.commessa && s.commessa.numero ? ', commessa ' + s.commessa.numero : '') + ', ultima modifica ' + dataBreve(dati.il) +
+      '. Vale solo su questo computer e questo browser: la copia che conta è il file di lavoro.';
+    $('recupero').hidden = false;
+  }
+  $('scarta-recupero').addEventListener('click', function () {
+    if (!confirm('Eliminare la copia automatica salvata in questo browser?')) return;
+    scriviLocale(CHIAVE_AUTO, null);
+    mostraRecupero();
+  });
+  $('recupera').addEventListener('click', async function () {
+    salvaAccesso();
+    try {
+      var dati = JSON.parse(leggiLocale(CHIAVE_AUTO) || 'null');
+      await caricaConfigurazione();
+      var esito = await chiama('/api/verifica-scheda', { scheda: dati.scheda, firma: null, modo: 'autosalvataggio' });
+      stato.scheda = esito.scheda;
+      stato.avvisi = [{ tipo: 'info', titolo: 'Scheda recuperata dalla memoria del browser', testo: 'Non è ancora nel file di lavoro: salvalo per conservarla.' }];
+      if (esito.declassate) stato.avvisi.push({ tipo: 'info', titolo: 'Conferme non riconosciute', testo: esito.declassate + ' voci confermate non portavano la verifica del servizio e sono tornate "Da verificare".' });
+      stato.sporca = true;
+      apriScheda();
+    } catch (err) {
+      erroreApertura(err);
+    }
+  });
+
+  // ── Avanzamento ──────────────────────────────────────────────────────────
+  var passi = [];
+  var orologio = null;
+
+  function passo(testo) {
+    var p = { testo: testo, st: 'attesa', inizio: null, fine: null, nota: '' };
+    passi.push(p);
+    disegnaPassi();
+    return p;
+  }
+  function avviaPasso(p) { p.st = 'corso'; p.inizio = Date.now(); disegnaPassi(); }
+  function chiudiPasso(p, st, nota) { p.st = st; p.fine = Date.now(); if (nota) p.nota = nota; disegnaPassi(); }
+  function disegnaPassi() {
+    $('passi').innerHTML = passi.map(function (p) {
+      var t = p.inizio ? Math.round(((p.fine || Date.now()) - p.inizio) / 1000) + ' s' : '';
+      return '<li data-st="' + p.st + '"><span class="i" aria-hidden="true"></span><span>' + esc(p.testo) +
+        (p.nota ? ' <span class="t">' + esc(p.nota) + '</span>' : '') + '</span><span class="t">' + t + '</span></li>';
+    }).join('');
+  }
+  function iniziaLavoro(titolo, ritorno) {
+    passi = [];
+    disegnaPassi();
+    $('lavoro-titolo').innerHTML = titolo;
+    mostra('lavoro');
+    avviso($('avviso-lavoro'), '');
+    $('torna-lavoro').hidden = true;
+    $('torna-lavoro').onclick = ritorno;
+    clearInterval(orologio);
+    orologio = setInterval(disegnaPassi, 1000);
+  }
+  function erroreLavoro(err) {
+    clearInterval(orologio);
+    disegnaPassi();
+    if (err && err.stato === 401) { erroreApertura(err); return; }
+    avviso($('avviso-lavoro'), (err && err.message) || 'Errore imprevisto.', 'Lavoro interrotto');
+    $('torna-lavoro').hidden = false;
+  }
+
+  function nomeCompito(c) {
+    var titoli = c.lettere.map(function (l) {
+      var s = stato.config.sezioni.filter(function (x) { return x.lettera === l; })[0];
+      return l + ' ' + (s ? s.titolo : '');
+    }).join(' · ');
+    if (c.parametri) titoli += c.altre ? ' (parte con altre prescrizioni)' : ' (parte dei parametri)';
+    return 'Estrazione ' + titoli;
+  }
+
+  // Lettura di un PDF sul servizio: testo per pagina, firmato
+  async function leggiPdf(f) {
+    var p = passo('Lettura di «' + f.file.name + '»');
+    avviaPasso(p);
+    try {
+      var base64 = await leggiBase64(f.file);
+      var lettura = await chiama('/api/leggi', { base64: base64 });
+      var ottiche = lettura.pagine.filter(function (x) { return !x.leggibile; }).length;
+      chiudiPasso(p, 'fatto', lettura.numeroPagine + ' pagine' + (ottiche ? ', ' + ottiche + ' lette per via ottica' : ''));
+      return { file: f.file.name, ruolo: f.ruolo, base64: base64, lettura: lettura };
+    } catch (err) {
+      chiudiPasso(p, 'errore');
+      if (err.stato === 401) throw err;
+      throw new ErroreServizio('«' + f.file.name + '»: ' + err.message, err.stato, err.codice);
+    }
+  }
+
+  function fontePerServizio(f) {
+    return {
+      id: f.id, file: f.file, ruolo: f.ruolo, base64: f.base64,
+      lettura: { sha256: f.lettura.sha256, pagine: f.lettura.pagine.map(function (p) { return { numero: p.numero, testo: p.testo, ocr: p.ocr }; }), firma: f.lettura.firma }
+    };
+  }
+  function metaFonte(f) {
+    return { id: f.id, file: f.file, ruolo: f.ruolo, pagine: f.lettura.numeroPagine, sha256: f.lettura.sha256, lingua: f.lettura.lingua };
+  }
+
+  // Estrazione a gruppi di sezioni; i compiti troncati si dividono
+  async function estraiCompiti(fonti) {
+    var corpoFonti = fonti.map(fontePerServizio);
+    var coda = stato.config.gruppi.map(function (g) { return { lettere: g, parametri: null, altre: true, passo: passo(nomeCompito({ lettere: g })) }; });
+    var gruppiVoci = [];
+    var incompleti = 0;
+    while (coda.length) {
+      var c = coda.shift();
+      avviaPasso(c.passo);
+      var esito = await chiama('/api/estrai', { fonti: corpoFonti, compito: { lettere: c.lettere, parametri: c.parametri, altre: c.altre } });
+      if (esito.troncato) {
+        if (esito.parti) {
+          chiudiPasso(c.passo, 'diviso', 'risposta troppo lunga: compito diviso');
+          var nuovi = esito.parti.map(function (p) { p.passo = passo(nomeCompito(p)); return p; });
+          passi = passi.filter(function (p) { return nuovi.every(function (n) { return n.passo !== p; }); });
+          var pos = passi.indexOf(c.passo) + 1;
+          Array.prototype.splice.apply(passi, [pos, 0].concat(nuovi.map(function (n) { return n.passo; })));
+          coda = nuovi.concat(coda);
+        } else {
+          incompleti++;
+          chiudiPasso(c.passo, 'incompleto', 'non completata: voci segnate come estrazione incompleta');
+          gruppiVoci.push(esito.vociIncomplete || []);
+        }
+        continue;
+      }
+      gruppiVoci.push(esito.voci);
+      chiudiPasso(c.passo, 'fatto', esito.voci.length + ' voci');
+    }
+    return { voci: unisciVoci(gruppiVoci), incompleti: incompleti };
+  }
+
+  function avvisoIncompleti(n) {
+    return n ? { tipo: 'info', titolo: 'Estrazione incompleta in ' + n + (n === 1 ? ' parte' : ' parti'), testo: 'Alcune risposte superavano il limite anche dopo la divisione: le voci interessate sono segnate "Da verificare" con il motivo.' } : null;
+  }
+
+  function nomeDaFile(file) { return String(file || 'Fiera').replace(/\.pdf$/i, '').replace(/[_-]+/g, ' ').slice(0, 40); }
+
+  // Unisce le voci di compiti diversi con identificativi unici
+  function unisciVoci(gruppi) {
+    var visti = {};
+    var voci = [];
+    gruppi.forEach(function (g) {
+      g.forEach(function (v) {
+        var id = v.id;
+        for (var n = 2; visti[id]; n++) id = v.id + '_' + n;
+        visti[id] = true;
+        voci.push(id === v.id ? v : Object.assign({}, v, { id: id }));
+      });
+    });
+    return voci;
+  }
+
+  // ── Scheda nuova ─────────────────────────────────────────────────────────
+  async function estraiNuova(nome, nomeFiera) {
+    iniziaLavoro('Lettura <span>dei regolamenti</span>', function () { mostra('apertura'); aggiornaApertura(); });
+    try {
+      await caricaConfigurazione();
+      var fonti = [];
+      for (var i = 0; i < fileNuova.length; i++) {
+        var letta = await leggiPdf(fileNuova[i]);
+        letta.id = 'f' + (i + 1);
+        fonti.push(letta);
+      }
+      var esito = await estraiCompiti(fonti);
+      var ora = adesso();
+      stato.scheda = {
+        id: null,
+        commessa: { numero: '', pm: nome },
+        fiera: { nome: nomeFiera || nomeDaFile(fonti[0].file), edizione: '', date: '' },
+        creata: { da: nome, il: ora },
+        aggiornata: { da: nome, il: ora },
+        fonti: fonti.map(metaFonte),
+        voci: esito.voci,
+        chat: []
+      };
+      stato.avvisi = [avvisoIncompleti(esito.incompleti)].filter(Boolean);
+      clearInterval(orologio);
+      apriScheda();
+      segnaModifica();
+    } catch (err) {
+      erroreLavoro(err);
+    }
+  }
+
+  // ── Ripresa da file di lavoro (con eventuali regolamenti) ────────────────
+  async function riprendi(nome, fileJson, pdf) {
+    try {
+      var testo = await leggiTesto(fileJson);
+      if (/^%PDF-/.test(testo)) throw new Error('Questo è il PDF di consegna. Per riprendere il lavoro carica il file di lavoro (.json)');
+      var dati;
+      try { dati = JSON.parse(testo); } catch (e) { throw new Error('Il file non è un file di lavoro valido (JSON non leggibile).'); }
+      var scheda = dati && dati.scheda && Array.isArray(dati.scheda.voci) ? dati.scheda : dati;
+      var firma = dati && dati.scheda ? dati.firma : null;
+      if (!scheda || !Array.isArray(scheda.voci) || !Array.isArray(scheda.fonti)) throw new Error('Il file non è un file di lavoro della Scheda regolamenti.');
+      await caricaConfigurazione();
+
+      var esito = await chiama('/api/verifica-scheda', { scheda: scheda, firma: firma, modo: 'file' });
+      stato.scheda = esito.scheda;
+      stato.avvisi = [];
+      stato.sporca = false;
+      if (!esito.valida) {
+        stato.avvisi.push({
+          tipo: 'info', azione: 'ricarica',
+          titolo: 'Firma del file di lavoro non valida',
+          testo: (esito.declassate ? esito.declassate + ' voci confermate sono state riportate a "Da verificare". ' : '') +
+            'Il file è stato modificato fuori dall\'app, oppure il segreto del servizio è cambiato. Le risposte del PM sono state mantenute. Ricarica i regolamenti per ripetere la verifica delle citazioni.'
+        });
+        stato.sporca = true;
+      }
+      if (!stato.scheda.commessa) stato.scheda.commessa = { numero: '', pm: nome };
+      if (!stato.scheda.chat) stato.scheda.chat = [];
+      if (pdf.length) { await aggiungiRegolamenti(pdf); return; }
+      apriScheda();
+      autosalva();
+    } catch (err) {
+      if (!$('lavoro').hidden) erroreLavoro(err);
+      else erroreApertura(err);
+    }
+  }
+
+  // Regolamenti aggiunti a una scheda: quelli già presenti (stessa impronta)
+  // ripetono la verifica delle citazioni, quelli nuovi vengono estratti e fusi.
+  async function aggiungiRegolamenti(elenco) {
+    iniziaLavoro('Aggiornamento <span>della scheda</span>', function () { apriScheda(); });
+    var s = stato.scheda;
+    var copia = JSON.stringify({ fonti: s.fonti, voci: s.voci, avvisi: stato.avvisi });
+    try {
+      await caricaConfigurazione();
+      var ricaricate = [];
+      var nuove = [];
+      for (var i = 0; i < elenco.length; i++) {
+        var letta = await leggiPdf(elenco[i]);
+        var gia = s.fonti.filter(function (f) { return f.sha256 && f.sha256 === letta.lettura.sha256; })[0];
+        if (gia) {
+          letta.id = gia.id; letta.file = gia.file; letta.ruolo = gia.ruolo;
+          if (ricaricate.every(function (x) { return x.id !== gia.id; })) ricaricate.push(letta);
+        } else {
+          var massimo = s.fonti.concat(nuove).reduce(function (m, f) { return Math.max(m, Number(String(f.id).slice(1)) || 0); }, 0);
+          letta.id = 'f' + (massimo + 1);
+          nuove.push(letta);
+          s.fonti.push(metaFonte(letta));
+        }
+      }
+
+      if (ricaricate.length) {
+        var p = passo('Verifica delle citazioni sui regolamenti ricaricati');
+        avviaPasso(p);
+        var r = await chiama('/api/riverifica', { fonti: ricaricate.map(fontePerServizio), voci: s.voci });
+        s.voci = r.voci;
+        chiudiPasso(p, 'fatto', r.ripristinate + ' voci di nuovo confermate, ' + r.ancoraAperte + ' ancora da verificare');
+        stato.avvisi = stato.avvisi.filter(function (a) { return a.azione !== 'ricarica' || s.voci.some(function (v) { return v.daRiverificare; }); });
+        if (r.ripristinate || r.ancoraAperte) stato.avvisi.push({ tipo: 'info', titolo: 'Citazioni verificate di nuovo', testo: r.ripristinate + ' voci sono tornate "Confermato"' + (r.ancoraAperte ? '; ' + r.ancoraAperte + ' restano da verificare.' : '.') });
+      }
+
+      if (nuove.length) {
+        var esito = await estraiCompiti(nuove);
+        var pf = passo('Fusione con la scheda esistente');
+        avviaPasso(pf);
+        var fusa = await chiama('/api/fondi', { fonti: s.fonti, esistenti: s.voci, nuove: esito.voci });
+        s.voci = fusa.voci;
+        chiudiPasso(pf, 'fatto', fusa.aggiunte + ' voci nuove, ' + fusa.aggiornate + ' aggiornate, ' + fusa.conflitti + ' in conflitto');
+        stato.avvisi.push({ tipo: 'info', titolo: 'Nuovi regolamenti fusi nella scheda', testo: fusa.aggiunte + ' voci nuove, ' + fusa.aggiornate + ' aggiornate' + (fusa.conflitti ? ', ' + fusa.conflitti + ' con valori diversi tra le fonti (portate a "Da verificare" con entrambi i valori).' : '.') + ' Le risposte già date non sono state toccate.' });
+        var inc = avvisoIncompleti(esito.incompleti);
+        if (inc) stato.avvisi.push(inc);
+      }
+      clearInterval(orologio);
+      apriScheda();
+      segnaModifica();
+    } catch (err) {
+      var prima = JSON.parse(copia);
+      s.fonti = prima.fonti;
+      s.voci = prima.voci;
+      stato.avvisi = prima.avvisi;
+      if (err && err.stato !== 401) err.message += ' La scheda è rimasta com\'era prima di questa operazione.';
+      erroreLavoro(err);
+    }
+  }
+
+  $('form-nuova').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if ($('avvia-nuova').disabled) return;
+    var nome = salvaAccesso();
+    estraiNuova(nome, $('nome-fiera').value.trim());
+  });
+  $('form-ripresa').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if ($('avvia-ripresa').disabled) return;
+    var nome = salvaAccesso();
+    riprendi(nome, $('json-ripresa').files[0], fileRipresa.slice());
+  });
+
+  // Dialogo "Aggiungi o ricarica regolamenti" dalla scheda aperta
+  $('aggiungi').addEventListener('click', function () {
+    fileAggiungi = [];
+    $('pdf-aggiungi').value = '';
+    disegnaElencoFile('elenco-aggiungi', fileAggiungi);
+    $('conferma-aggiungi').disabled = true;
+    $('dialogo-regolamenti').showModal();
+  });
+  $('pdf-aggiungi').addEventListener('change', function () {
+    fileAggiungi = sceltaPdf(this, 'elenco-aggiungi', null);
+    $('conferma-aggiungi').disabled = !fileAggiungi.length;
+  });
+  collegaRuoli('elenco-aggiungi', function () { return fileAggiungi; });
+  $('annulla-aggiungi').addEventListener('click', function () { $('dialogo-regolamenti').close(); });
+  $('conferma-aggiungi').addEventListener('click', function () {
+    $('dialogo-regolamenti').close();
+    aggiungiRegolamenti(fileAggiungi.slice());
+  });
+
+  // ── Vista della scheda ───────────────────────────────────────────────────
+  function etichettaFonte(id) {
+    var f = (stato.scheda.fonti || []).filter(function (x) { return x.id === id; })[0];
+    if (!f) return id;
+    var n = String(f.file || id).replace(/\.pdf$/i, '').replace(/[_]+/g, ' ');
+    return n.length > 34 ? n.slice(0, 32) + '…' : n;
+  }
+
+  // Nei testi del modello gli identificativi f1, f2… diventano il nome della fonte
+  function conFonti(testo) {
+    return String(testo == null ? '' : testo).replace(/\bf(\d{1,3})\b/g, function (m, n) {
+      var f = (stato.scheda.fonti || []).filter(function (x) { return x.id === 'f' + n; })[0];
+      return f ? '«' + etichettaFonte(f.id) + '»' : m;
+    });
+  }
+
+  function riferimenti(v) {
+    var visti = {};
+    return (v.citazioni || []).map(function (c) { return etichettaFonte(c.fonte) + ', p.' + c.pagina; })
+      .filter(function (r) { if (visti[r]) return false; visti[r] = true; return true; }).join('; ');
+  }
+
+  function origine(c) {
+    if (c.verificata === true) return '<span class="orig">' + esc(etichettaFonte(c.fonte)) + ', p.' + esc(c.pagina) + ' · ' + (c.metodo === 'ocr' ? 'ritrovata con lettura ottica' : 'ritrovata nel testo del PDF') + '</span>';
+    if (c.verificata === null) return '<span class="orig">' + esc(etichettaFonte(c.fonte)) + ', p.' + esc(c.pagina) + ' · da riverificare</span>';
+    var perche = c.motivo && c.motivo !== 'citazione non trovata nel documento' ? c.motivo : 'NON ritrovata nel documento';
+    return '<span class="orig no">' + esc(etichettaFonte(c.fonte)) + ', p.' + esc(c.paginaIndicata || c.pagina) + ' · ' + esc(perche) + '</span>';
+  }
+
+  // Voci che condividono almeno una citazione: si segnalano a vicenda
+  function mappaDoppioni(voci) {
+    var perCitazione = {};
+    voci.forEach(function (v) {
+      (v.citazioni || []).forEach(function (c) {
+        var k = c.fonte + '|' + slugCitazione(c.testo);
+        (perCitazione[k] = perCitazione[k] || []).push(v);
+      });
+    });
+    var doppi = {};
+    Object.keys(perCitazione).forEach(function (k) {
+      var gruppo = perCitazione[k];
+      if (gruppo.length < 2) return;
+      gruppo.forEach(function (v) {
+        gruppo.forEach(function (w) {
+          if (w === v) return;
+          var l = doppi[v.id] = doppi[v.id] || [];
+          if (l.indexOf(w) < 0) l.push(w);
+        });
+      });
+    });
+    return doppi;
+  }
+
+  function bloccoRisposta(v) {
+    var c = v.chiarimento;
+    if (!c) return '';
+    var righe = '';
+    if (c.tipo === 'chiarito') righe = '<span>' + esc(c.valore) + '</span><span class="chi">Fonte: ' + esc(c.fonte || '—') + '</span>';
+    if (c.tipo === 'in_attesa') righe = '<span>In attesa di risposta da: ' + esc(c.chi || '—') + (c.dal ? ', dal ' + esc(c.dal) : '') + '</span>';
+    if (c.tipo === 'non_applicabile') righe = '<span>Il parametro non riguarda il progetto.</span>';
+    if (c.nota) righe += '<span class="chi">Nota: ' + esc(c.nota) + '</span>';
+    return '<p class="lab">Risposta del PM</p><div class="risposta">' + righe +
+      '<span class="chi">' + esc(c.da || '') + (c.il ? ', ' + esc(dataBreve(c.il)) : '') + '</span></div>';
+  }
+
+  function tessera(v, doppi) {
+    var se = statoEffettivo(v);
+    var st = STATI[se];
+    var anche = doppi[v.id] || [];
+    var html = '<article class="tile" data-st="' + st.k + '" id="voce-' + esc(v.id) + '">' +
+      '<h3>' + esc(v.parametro) + '</h3>' +
+      (v.valore ? '<p class="val">' + esc(conFonti(v.valore)) + '</p>' : '') +
+      '<div class="meta"><span class="ref">' + esc(riferimenti(v)) + '</span><span class="chip ' + st.k + '">' + st.nome + '</span></div>' +
+      (se !== v.stato && eStato(v.stato) ? '<p class="det">Dal regolamento: ' + STATI[v.stato].nome + '</p>' : '') +
+      (v.motivo && v.stato !== 'confermato' ? '<p class="det">' + esc(conFonti(v.motivo)) + '</p>' : '') +
+      bloccoRisposta(v) +
+      (anche.length ? '<p class="det">Stessa citazione anche in: ' + anche.map(function (w) {
+        return '<a href="#voce-' + esc(w.id) + '">' + esc(w.parametro) + ' (' + esc(w.sezione) + ')</a>';
+      }).join(', ') + '</p>' : '');
+    if (v.citazioni && v.citazioni.length) {
+      html += '<details><summary>Citazione testuale</summary><div class="q">' + v.citazioni.map(function (c) {
+        return '<p>' + esc(c.testo) + origine(c) + '</p>';
+      }).join('') + '</div></details>';
+    }
+    if (v.stato !== 'confermato') {
+      html += '<div class="azioni-tile">' + (v.chiarimento
+        ? '<button type="button" class="btn piccolo" data-rispondi="' + esc(v.id) + '">Modifica risposta</button><button type="button" class="btn testo piccolo" data-annulla="' + esc(v.id) + '">Annulla risposta</button>'
+        : '<button type="button" class="btn piccolo" data-rispondi="' + esc(v.id) + '">Rispondi</button>') + '</div>';
+    }
+    return html + '</article>';
+  }
+
+  function conteggi(voci) {
+    var c = {};
+    ORDINE_FILTRI.forEach(function (k) { c[k] = 0; });
+    voci.forEach(function (v) { c[statoEffettivo(v)]++; });
+    return c;
+  }
+
+  function stileTinta(l) { var t = TINTE[l] || TINTE.V; return '--h:' + t[0] + ';--s:' + t[1] + '%'; }
+
+  function schedaSezione(sez, voci, doppi) {
+    var id = 'sez-' + sez.lettera.toLowerCase();
+    var stile = stileTinta(sez.lettera);
+    if (!voci.length) {
+      return '<section class="card vuota" id="' + id + '" data-sec="' + sez.lettera + '" style="' + stile + '" aria-labelledby="' + id + '-t">' +
+        '<header class="rail"><p class="letter" aria-hidden="true">' + sez.lettera + '</p><h2 id="' + id + '-t">' + esc(sez.titolo) + '</h2>' +
+        '<p class="rail-note">Nessuna voce estratta per questa sezione.</p></header></section>';
+    }
+    var c = conteggi(voci);
+    var ordinate = voci.map(function (v, i) { return { v: v, i: i }; }).sort(function (a, b) {
+      return (STATI[statoEffettivo(a.v)].ordine - STATI[statoEffettivo(b.v)].ordine) || (a.i - b.i);
+    }).map(function (x) { return x.v; });
+    var html = '<section class="card" id="' + id + '" data-sec="' + sez.lettera + '" style="' + stile + '" aria-labelledby="' + id + '-t">' +
+      '<header class="rail"><p class="letter" aria-hidden="true">' + sez.lettera + '</p><h2 id="' + id + '-t">' + esc(sez.titolo) + '</h2>' +
+      '<ul class="counts" aria-label="Stato delle voci">' +
+      ORDINE_FILTRI.filter(function (k) { return c[k] > 0 || ['confermato', 'da_verificare', 'non_specificato'].indexOf(k) >= 0; }).map(function (k) {
+        return '<li><span class="chip ' + STATI[k].k + '">' + STATI[k].nome + '</span><b>' + c[k] + '</b></li>';
+      }).join('') + '</ul></header><div class="body"><div class="tiles">';
+    var ultimo = null;
+    ordinate.forEach(function (v) {
+      var se = statoEffettivo(v);
+      var st = STATI[se];
+      if (st.k !== ultimo) {
+        html += '<div class="grp ' + st.k + '" data-st="' + st.k + '"><span class="gl ' + st.k + '"></span><b>' + st.nome + '</b><span>' + c[se] + '</span></div>';
+        ultimo = st.k;
+      }
+      html += tessera(v, doppi);
+    });
+    return html + '</div></div></section>';
+  }
+
+  function schedaPunti(voci) {
+    var aperte = voci.filter(function (v) { return statoEffettivo(v) === 'da_verificare'; });
+    var attesa = voci.filter(function (v) { return statoEffettivo(v) === 'in_attesa'; });
+    var non = voci.filter(function (v) { return statoEffettivo(v) === 'non_specificato'; });
+    var html = '<section class="card" id="sez-v" data-sec="V" style="' + stileTinta('V') + '" aria-labelledby="sez-v-t">' +
+      '<header class="rail"><p class="letter" aria-hidden="true">!</p><h2 id="sez-v-t">Punti da verificare</h2>' +
+      '<p class="rail-note">Le voci aperte di tutte le sezioni, con la causa del dubbio. Si chiudono una alla volta con "Voci aperte".</p></header>' +
+      '<div class="body"><div class="tiles">';
+    if (aperte.length) {
+      html += '<div class="grp chk" data-st="chk"><span class="gl chk"></span><b>Da verificare</b><span>' + aperte.length + '</span></div>';
+      aperte.forEach(function (v) {
+        html += '<article class="tile" data-st="chk"><h3><a href="#voce-' + esc(v.id) + '" style="color:inherit">' + esc(v.parametro) + '</a> · ' + esc(v.sezione) + '</h3>' +
+          '<p class="lab">Causa</p><p class="val">' + esc(conFonti(v.motivo) || 'Passaggio da verificare.') + '</p>' +
+          (v.valore ? '<p class="lab">Valore estratto</p><p class="val">' + esc(conFonti(v.valore)) + '</p>' : '') +
+          '<div class="meta"><span class="ref">' + esc(riferimenti(v)) + '</span><span class="chip chk">Da verificare</span></div>' +
+          '<div class="azioni-tile"><button type="button" class="btn piccolo" data-rispondi="' + esc(v.id) + '">Rispondi</button></div></article>';
+      });
+    }
+    if (attesa.length) {
+      html += '<div class="grp att" data-st="att"><span class="gl att"></span><b>In attesa</b><span>' + attesa.length + '</span></div>';
+      attesa.forEach(function (v) {
+        html += '<article class="tile" data-st="att"><h3><a href="#voce-' + esc(v.id) + '" style="color:inherit">' + esc(v.parametro) + '</a> · ' + esc(v.sezione) + '</h3>' +
+          bloccoRisposta(v) + '<div class="meta"><span></span><span class="chip att">In attesa</span></div></article>';
+      });
+    }
+    if (non.length) {
+      html += '<div class="grp na" data-st="na"><span class="gl na"></span><b>Non specificato</b><span>' + non.length + '</span></div>' +
+        '<article class="tile wide" data-st="na"><h3>Parametri non specificati nelle fonti</h3>' +
+        '<p class="val">Da chiedere all\'ente fiera o all\'organizzatore.</p><ul class="pills">' +
+        non.map(function (v) { return '<li><a href="#voce-' + esc(v.id) + '">' + esc(v.parametro) + ' (' + esc(v.sezione) + ')</a></li>'; }).join('') +
+        '</ul><div class="meta"><span></span><span class="chip na">Non specificato</span></div></article>';
+    }
+    if (!aperte.length && !non.length && !attesa.length) html += '<p class="rail-note">Nessuna voce aperta.</p>';
+    return html + '</div></div></section>';
+  }
+
+  function apriScheda() {
+    var s = stato.scheda;
+    clearInterval(orologio);
+    mostra('vista');
+    $('campo-fiera').value = s.fiera && s.fiera.nome || '';
+    $('campo-date').value = s.fiera && s.fiera.date || '';
+    $('campo-commessa').value = s.commessa && s.commessa.numero || '';
+    $('campo-pm').value = s.commessa && s.commessa.pm || '';
+    disegnaScheda();
+  }
+
+  function disegnaScheda() {
+    var s = stato.scheda;
+    if (!s) return;
+    $('titolo-fiera').textContent = (s.fiera && s.fiera.nome) || 'Fiera';
+    var fatti = [];
+    if (s.fiera && s.fiera.date) fatti.push(s.fiera.date);
+    (s.fonti || []).forEach(function (f) { fatti.push((RUOLI[f.ruolo] || 'Fonte') + ': ' + f.file + ' (' + f.pagine + ' pp.)'); });
+    if (s.aggiornata && s.aggiornata.il) fatti.push('Ultimo intervento: ' + dataBreve(s.aggiornata.il) + (s.aggiornata.da ? ', ' + s.aggiornata.da : ''));
+    $('fatti').innerHTML = fatti.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('');
+
+    $('avvisi-scheda').innerHTML = (stato.avvisi || []).map(function (a, i) {
+      return '<div class="avviso' + (a.tipo === 'errore' ? ' errore' : '') + '"><b>' + esc(a.titolo) + '</b>' + esc(a.testo) +
+        (a.azione === 'ricarica' ? '<div class="riga" style="margin-top:8px"><button type="button" class="btn piccolo primary" data-ricarica="1">Ricarica i regolamenti</button></div>' : '') +
+        '<div class="riga" style="margin-top:6px"><button type="button" class="btn testo piccolo" data-chiudi-avviso="' + i + '">Chiudi avviso</button></div></div>';
+    }).join('');
+
+    var doppi = mappaDoppioni(s.voci);
+    var sezioni = stato.config.sezioni;
+    $('cards').innerHTML = sezioni.map(function (sez) {
+      return schedaSezione(sez, s.voci.filter(function (v) { return v.sezione === sez.lettera; }), doppi);
+    }).join('') + schedaPunti(s.voci);
+
+    $('nav').innerHTML = sezioni.map(function (sez) {
+      return '<a class="nav-l" href="#sez-' + sez.lettera.toLowerCase() + '" data-sec="' + sez.lettera + '" style="' + stileTinta(sez.lettera) + '" aria-label="Sezione ' + sez.lettera + ': ' + esc(sez.titolo) + '"><span>' + sez.lettera + '</span></a>';
+    }).join('') + '<a class="nav-l" href="#sez-v" data-sec="V" style="' + stileTinta('V') + '" aria-label="Punti da verificare"><span>!</span></a>';
+
+    var c = conteggi(s.voci);
+    $('filtri').innerHTML = '<button type="button" data-filter="all">Tutte <b>' + s.voci.length + '</b></button>' +
+      ORDINE_FILTRI.filter(function (k) { return c[k] > 0 || ['confermato', 'da_verificare', 'non_specificato'].indexOf(k) >= 0; }).map(function (k) {
+        return '<button type="button" data-filter="' + STATI[k].k + '"><span class="gl ' + STATI[k].k + '"></span>' + STATI[k].nome + ' <b>' + c[k] + '</b></button>';
+      }).join('');
+
+    var aperte = s.voci.filter(eAperta).length;
+    $('apri-chat').textContent = aperte ? 'Voci aperte (' + aperte + ')' : 'Nessuna voce aperta';
+
+    $('piede').textContent = 'Fonti: ' + (s.fonti || []).map(function (f) { return f.file; }).join('; ') +
+      '. Ogni valore rimanda alla frase originale, apribile da "Citazione testuale", con la pagina e il modo in cui il software l\'ha ritrovata nel PDF. I valori "Chiarito dal PM" non vengono dal regolamento.';
+    applicaFiltro(stato.filtro);
+    aggiornaIndicatore();
+    if (!$('chat').hidden) disegnaChat();
+  }
+
+  // Filtro per stato: nasconde tessere e gruppi, e le schede rimaste vuote
+  function applicaFiltro(f) {
+    stato.filtro = f;
+    var cards = Array.prototype.slice.call(document.querySelectorAll('#cards .card'));
+    document.querySelectorAll('#cards .tile, #cards .grp').forEach(function (t) {
+      t.hidden = f !== 'all' && t.getAttribute('data-st') !== f;
+    });
+    cards.forEach(function (c) {
+      c.hidden = f !== 'all' && c.querySelector('.tile:not([hidden])') === null;
+    });
+    document.querySelectorAll('#nav .nav-l').forEach(function (n) {
+      var sec = n.getAttribute('data-sec');
+      n.hidden = !cards.some(function (c) { return c.getAttribute('data-sec') === sec && !c.hidden; });
+    });
+    var trovato = false;
+    document.querySelectorAll('#filtri button').forEach(function (b) {
+      var on = b.getAttribute('data-filter') === f;
+      trovato = trovato || on;
+      b.setAttribute('aria-pressed', String(on));
+    });
+    if (!trovato && f !== 'all') applicaFiltro('all');
+  }
+  $('filtri').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-filter]');
+    if (b) applicaFiltro(b.getAttribute('data-filter'));
+  });
+
+  $('cards').addEventListener('click', function (e) {
+    var r = e.target.closest('[data-rispondi]');
+    if (r) { apriChat(r.getAttribute('data-rispondi')); return; }
+    var a = e.target.closest('[data-annulla]');
+    if (a) {
+      var v = voce(a.getAttribute('data-annulla'));
+      if (!v || !confirm('Annullare la risposta registrata per «' + v.parametro + '»? La voce torna aperta.')) return;
+      registraInChat(v.id, 'sistema', 'Risposta annullata da ' + stato.utente + '.');
+      v.chiarimento = null;
+      segnaModifica();
+      disegnaScheda();
+    }
+  });
+  $('avvisi-scheda').addEventListener('click', function (e) {
+    if (e.target.closest('[data-ricarica]')) { $('aggiungi').click(); return; }
+    var c = e.target.closest('[data-chiudi-avviso]');
+    if (c) { stato.avvisi.splice(Number(c.getAttribute('data-chiudi-avviso')), 1); disegnaScheda(); }
+  });
+
+  // Dati della scheda modificabili in testata
+  [['campo-fiera', 'fiera'], ['campo-date', 'date'], ['campo-commessa', 'commessa'], ['campo-pm', 'pm']].forEach(function (c) {
+    $(c[0]).addEventListener('input', function () {
+      var s = stato.scheda;
+      if (!s) return;
+      var valore = this.value.trim();
+      if (c[1] === 'fiera') { s.fiera.nome = valore; $('titolo-fiera').textContent = valore || 'Fiera'; }
+      if (c[1] === 'date') s.fiera.date = valore;
+      if (c[1] === 'commessa') s.commessa.numero = valore;
+      if (c[1] === 'pm') s.commessa.pm = valore;
+      segnaModifica();
+    });
+  });
+
+  $('chiudi-scheda').addEventListener('click', async function () {
+    var scelta = await chiediUscita();
+    if (scelta === 'annulla') return;
+    if (scelta === 'salva' && !(await salvaFileLavoro())) return;
+    stato.scheda = null;
+    stato.sporca = false;
+    stato.avvisi = [];
+    fileNuova = []; fileRipresa = [];
+    ['pdf-nuova', 'json-ripresa', 'pdf-ripresa'].forEach(function (id) { $(id).value = ''; });
+    disegnaElencoFile('elenco-nuova', []);
+    disegnaElencoFile('elenco-ripresa', []);
+    mostra('apertura');
+    mostraRecupero();
+    aggiornaApertura();
+  });
+
+  // ── Chat di risoluzione ──────────────────────────────────────────────────
+  var chat = { id: null, proposta: null, extra: null, inCorso: false, errore: '' };
+
+  // Ordine della chat: voci aperte nell'ordine delle sezioni, poi quelle in attesa
+  function elencoChat() {
+    var ordine = {};
+    stato.config.sezioni.forEach(function (s, i) { ordine[s.lettera] = i; });
+    var voci = stato.scheda.voci.map(function (v, i) { return { v: v, i: i }; })
+      .sort(function (a, b) { return (ordine[a.v.sezione] - ordine[b.v.sezione]) || (a.i - b.i); })
+      .map(function (x) { return x.v; });
+    return voci.filter(eAperta).concat(voci.filter(function (v) { return statoEffettivo(v) === 'in_attesa'; }));
+  }
+
+  function apriChat(id) {
+    var elenco = elencoChat();
+    chat.id = id || (elenco[0] && elenco[0].id) || null;
+    chat.proposta = null; chat.extra = null; chat.errore = '';
+    $('chat').hidden = false;
+    document.body.classList.add('chat-aperta');
+    disegnaChat();
+    $('chat-testo').focus();
+  }
+  function chiudiChat() {
+    $('chat').hidden = true;
+    document.body.classList.remove('chat-aperta');
+  }
+  $('apri-chat').addEventListener('click', function () { apriChat(null); });
+  $('chiudi-chat').addEventListener('click', chiudiChat);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('chat').hidden && !document.querySelector('dialog[open]')) chiudiChat(); });
+
+  function spostati(passo) {
+    var elenco = elencoChat();
+    var i = elenco.map(function (v) { return v.id; }).indexOf(chat.id);
+    var prossimo = elenco[i + passo] || (passo > 0 ? elenco.filter(function (v) { return v.id !== chat.id; })[0] : elenco[elenco.length - 1]);
+    chat.id = prossimo ? prossimo.id : null;
+    chat.proposta = null; chat.extra = null; chat.errore = '';
+    disegnaChat();
+  }
+
+  function registraInChat(id, ruolo, testo) {
+    stato.scheda.chat = stato.scheda.chat || [];
+    stato.scheda.chat.push({ voce: id, ruolo: ruolo, testo: testo, da: ruolo === 'pm' ? stato.utente : undefined, il: adesso() });
+  }
+
+  function descriviProposta(p) {
+    if (p.tipo === 'chiarito') return 'Chiarito dal PM: ' + p.valore + ' — fonte: ' + (p.fonte || 'non indicata');
+    if (p.tipo === 'in_attesa') return 'In attesa di risposta da: ' + (p.chi || 'non indicato') + (p.dal ? ', dal ' + p.dal : '');
+    return 'Non applicabile: il parametro non riguarda il progetto.';
+  }
+
+  function disegnaChat() {
+    var corpo = $('chat-corpo');
+    var elenco = elencoChat();
+    var v = chat.id ? voce(chat.id) : null;
+    if (!v) {
+      $('chat-posizione').textContent = '';
+      corpo.innerHTML = '<div class="msg assistente">Nessuna voce aperta. Puoi salvare il file di lavoro; il PDF di consegna arriva con la fase successiva.</div>';
+      return;
+    }
+    var pos = elenco.map(function (x) { return x.id; }).indexOf(v.id);
+    var aperte = elenco.filter(eAperta).length;
+    $('chat-posizione').textContent = (pos >= 0 ? 'Voce ' + (pos + 1) + ' di ' + elenco.length : 'Voce già chiusa') + ' · ' + aperte + ' aperte';
+
+    var se = statoEffettivo(v);
+    var html = '<div class="chat-voce"><h3>' + esc(v.parametro) + ' · sezione ' + esc(v.sezione) + '</h3>' +
+      '<div class="riga"><span class="chip ' + STATI[se].k + '">' + STATI[se].nome + '</span><a href="#voce-' + esc(v.id) + '" class="btn testo piccolo">Vai alla tessera</a></div>' +
+      (v.valore ? '<p class="lab">Valore estratto</p><p>' + esc(conFonti(v.valore)) + '</p>' : '') +
+      '<p class="lab">Perché è aperta</p><p>' + esc(conFonti(v.motivo) || (v.stato === 'non_specificato' ? 'Il regolamento non tratta il parametro.' : 'Passaggio da verificare.')) + '</p>' +
+      ((v.citazioni || []).length ? '<p class="lab">Citazione</p>' + v.citazioni.map(function (c) {
+        return '<p class="cit">«' + esc(c.testo) + '» — ' + esc(etichettaFonte(c.fonte)) + ', p.' + esc(c.pagina) + '</p>';
+      }).join('') : '') +
+      bloccoRisposta(v) + '</div>';
+
+    html += '<div class="msg assistente">' + (v.chiarimento
+      ? 'Questa voce ha già una risposta. Puoi aggiornarla scrivendo il nuovo valore e la fonte, oppure passare alla prossima.'
+      : 'Rispondi con il valore e la fonte (per esempio "6 m, mail dell\'ente fiera del 12/11"), oppure scegli "Non applicabile" o "In attesa".') + '</div>';
+    (stato.scheda.chat || []).filter(function (m) { return m.voce === v.id; }).forEach(function (m) {
+      html += '<div class="msg ' + (m.ruolo === 'pm' ? 'pm' : m.ruolo === 'sistema' ? 'sistema' : 'assistente') + '">' + esc(m.testo) + '</div>';
+    });
+    if (chat.inCorso) html += '<div class="msg sistema">L\'assistente sta scrivendo…</div>';
+    if (chat.errore) html += '<div class="avviso errore">' + esc(chat.errore) + '</div>';
+    if (chat.extra && chat.extra.incoerenza) html += '<div class="avviso"><b>Possibile incoerenza</b>' + esc(chat.extra.incoerenza) + '</div>';
+    if (chat.extra && chat.extra.domandaEnte) {
+      html += '<div><p class="lab" style="margin:0 0 4px;font:500 11px var(--font-mono);color:var(--muted)">DOMANDA DA INOLTRARE</p><div class="domanda" id="domanda-ente">' + esc(chat.extra.domandaEnte) + '</div>' +
+        '<div class="riga" style="margin-top:6px"><button type="button" class="btn piccolo" data-copia="1">Copia la domanda</button></div></div>';
+    }
+    if (chat.proposta) {
+      html += '<div class="proposta"><b>Da registrare</b><span>' + esc(descriviProposta(chat.proposta)) + '</span>' +
+        (chat.proposta.nota ? '<span class="chi">Nota: ' + esc(chat.proposta.nota) + '</span>' : '') +
+        '<div class="azioni-tile"><button type="button" class="btn primary piccolo" data-registra="1">Registra</button><button type="button" class="btn piccolo" data-correggi="1">Correggi</button></div></div>';
+    }
+    corpo.innerHTML = html;
+    corpo.scrollTop = corpo.scrollHeight;
+  }
+
+  function collegate(v) {
+    return stato.scheda.voci.filter(function (w) { return w.sezione === v.sezione && w.id !== v.id && (w.chiarimento || w.stato === 'confermato'); })
+      .map(function (w) { return { parametro: w.parametro, valore: w.valore, chiarimento: w.chiarimento ? { tipo: w.chiarimento.tipo, valore: w.chiarimento.valore } : null }; });
+  }
+  function linguaDi(v) {
+    var id = v.citazioni && v.citazioni[0] && v.citazioni[0].fonte;
+    var f = stato.scheda.fonti.filter(function (x) { return x.id === id; })[0] || stato.scheda.fonti[0];
+    return f && f.lingua || '';
+  }
+
+  async function chiediAllAssistente(richiesta) {
+    var v = voce(chat.id);
+    if (!v || chat.inCorso) return;
+    chat.inCorso = true; chat.errore = '';
+    disegnaChat();
+    try {
+      var r = await chiama('/api/chat', {
+        voce: { id: v.id, sezione: v.sezione, parametro: v.parametro, valore: v.valore, stato: v.stato, motivo: v.motivo, citazioni: (v.citazioni || []).map(function (c) { return { fonte: c.fonte, pagina: c.pagina, testo: c.testo }; }) },
+        fonti: stato.scheda.fonti.map(function (f) { return { id: f.id, file: f.file, ruolo: f.ruolo }; }),
+        collegate: collegate(v),
+        lingua: linguaDi(v),
+        messaggi: (stato.scheda.chat || []).filter(function (m) { return m.voce === v.id && m.ruolo !== 'sistema'; }).map(function (m) { return { ruolo: m.ruolo, testo: m.testo }; }),
+        richiesta: richiesta
+      });
+      if (r.messaggio) registraInChat(v.id, 'assistente', r.messaggio);
+      chat.proposta = r.proposta;
+      chat.extra = { domandaEnte: r.domandaEnte, incoerenza: r.incoerenza };
+      segnaModifica();
+    } catch (err) {
+      chat.errore = err.message;
+      if (err.stato === 401) chat.errore += ' Chiudi la scheda dopo averla salvata e inserisci di nuovo il codice d\'accesso.';
+    } finally {
+      chat.inCorso = false;
+      disegnaChat();
+    }
+  }
+
+  $('chat-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var testo = $('chat-testo').value.trim();
+    if (!testo || !chat.id || chat.inCorso) return;
+    registraInChat(chat.id, 'pm', testo);
+    $('chat-testo').value = '';
+    chat.proposta = null;
+    segnaModifica();
+    chiediAllAssistente('risposta');
+  });
+  $('chat-testo').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $('chat-form').requestSubmit(); }
+  });
+
+  $('chat-form').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-azione]');
+    if (!b || !chat.id) return;
+    var azione = b.getAttribute('data-azione');
+    if (azione === 'na') { chat.proposta = { tipo: 'non_applicabile', valore: '', fonte: '', chi: '', dal: '', nota: '' }; disegnaChat(); }
+    if (azione === 'attesa') { $('chat-testo').value = 'In attesa di risposta da: … dal: ' + new Date().toLocaleDateString('it-IT'); $('chat-testo').focus(); }
+    if (azione === 'domanda') chiediAllAssistente('domanda');
+    if (azione === 'salta') spostati(1);
+    if (azione === 'indietro') spostati(-1);
+  });
+
+  $('chat-corpo').addEventListener('click', function (e) {
+    if (e.target.closest('[data-copia]')) {
+      var testo = $('domanda-ente').textContent;
+      if (navigator.clipboard) navigator.clipboard.writeText(testo).catch(function () {});
+      e.target.textContent = 'Copiata';
+      return;
+    }
+    if (e.target.closest('[data-correggi]')) {
+      chat.proposta = null;
+      disegnaChat();
+      $('chat-testo').focus();
+      return;
+    }
+    if (e.target.closest('[data-registra]')) registraProposta();
+  });
+
+  // La registrazione la fa il PM: la proposta diventa la risposta della voce.
+  // Lo stato estratto non cambia; una risposta non rende mai una voce confermata.
+  function registraProposta() {
+    var p = chat.proposta;
+    var v = voce(chat.id);
+    if (!p || !v) return;
+    if (p.tipo === 'chiarito' && (!p.valore.trim() || !p.fonte.trim())) {
+      chat.errore = 'Per registrare un chiarimento servono il valore e la fonte. Scrivili nella risposta.';
+      chat.proposta = null;
+      disegnaChat();
+      return;
+    }
+    if (p.tipo === 'in_attesa' && !p.chi.trim()) {
+      chat.errore = 'Per mettere la voce in attesa serve sapere da chi si attende la risposta.';
+      chat.proposta = null;
+      disegnaChat();
+      return;
+    }
+    v.chiarimento = {
+      tipo: p.tipo, valore: p.valore, fonte: p.fonte, chi: p.chi, dal: p.dal, nota: p.nota,
+      da: stato.utente, il: adesso()
+    };
+    registraInChat(v.id, 'sistema', 'Registrato da ' + stato.utente + ': ' + descriviProposta(p));
+    chat.proposta = null;
+    segnaModifica();
+    disegnaScheda();
+    spostati(1);
+  }
+
+  // ── PDF di consegna ──────────────────────────────────────────────────────
+  // Il PDF si ottiene con la stampa del browser, senza librerie. La dicitura
+  // in testa alla prima pagina è fissa: il servizio la usa per riconoscere il
+  // PDF di consegna se viene ricaricato al posto del file di lavoro.
+  var DICITURA_CONSEGNA = 'WES · Scheda prescrizioni tecniche · Documento di consegna';
+
+  function campiMancanti() {
+    return !$('campo-pm').value.trim() || !FORMATO_COMMESSA.test($('campo-commessa').value.trim());
+  }
+
+  function intestazioneConsegna() {
+    var s = stato.scheda;
+    var c = conteggi(s.voci);
+    var aperte = c.da_verificare + c.non_specificato;
+    var oggi = new Date().toLocaleDateString('it-IT');
+    var righe = [
+      ['Fiera', (s.fiera && s.fiera.nome) || ''],
+      ['Date', (s.fiera && s.fiera.date) || ''],
+      ['Numero commessa', $('campo-commessa').value.trim()],
+      ['Nome PM', $('campo-pm').value.trim()],
+      ['Ultimo intervento', s.aggiornata ? dataBreve(s.aggiornata.il) + (s.aggiornata.da ? ', ' + s.aggiornata.da : '') : ''],
+      ['Fonti caricate', (s.fonti || []).map(function (f) { return esc((RUOLI[f.ruolo] || 'Fonte') + ': ' + f.file + ' (' + f.pagine + ' pp.)'); }).join('<br>')]
+    ];
+    return '<p class="dicitura">' + esc(DICITURA_CONSEGNA) + '</p>' +
+      (campiMancanti() ? '<p class="mancanti">Nome PM e numero di commessa mancanti</p>' : '') +
+      (aperte
+        ? '<p class="versione bozza">Bozza<small>' + aperte + (aperte === 1 ? ' voce ancora aperta' : ' voci ancora aperte') + ' · stampata il ' + oggi + '</small></p>'
+        : '<p class="versione">Versione del giorno ' + oggi + (c.in_attesa ? '<small>' + c.in_attesa + (c.in_attesa === 1 ? ' voce in attesa' : ' voci in attesa') + ' di risposta da interlocutori esterni</small>' : '') + '</p>') +
+      '<table><tbody>' + righe.map(function (r) {
+        return '<tr><th scope="row">' + esc(r[0]) + '</th><td>' + (r[0] === 'Fonti caricate' ? r[1] : esc(r[1] || '—')) + '</td></tr>';
+      }).join('') + '</tbody></table>' +
+      '<ul class="conteggi" aria-label="Riepilogo per stato">' + ORDINE_FILTRI.map(function (k) {
+        return '<li><span class="gl ' + STATI[k].k + '"></span>' + STATI[k].nome + ': <b>' + c[k] + '</b></li>';
+      }).join('') + '</ul>';
+  }
+
+  // Prima della stampa (dal pulsante, da Ctrl+P o dal menu del browser):
+  // intestazione aggiornata, tutte le voci visibili, citazioni aperte.
+  var primaDellaStampa = null;
+  window.addEventListener('beforeprint', function () {
+    if (!stato.scheda || $('vista').hidden) return;
+    var chiusi = Array.prototype.slice.call(document.querySelectorAll('#cards details:not([open])'));
+    chiusi.forEach(function (d) { d.open = true; });
+    primaDellaStampa = { filtro: stato.filtro, chiusi: chiusi };
+    $('stampa-testa').innerHTML = intestazioneConsegna();
+    applicaFiltro('all');
+  });
+  window.addEventListener('afterprint', function () {
+    if (!primaDellaStampa) return;
+    primaDellaStampa.chiusi.forEach(function (d) { d.open = false; });
+    applicaFiltro(primaDellaStampa.filtro);
+    primaDellaStampa = null;
+  });
+
+  // Il browser non permette di bloccare la stampa avviata dal menu: in quel
+  // caso il PDF porta la dicitura rossa. Dal pulsante e da Ctrl+P, invece,
+  // l'app controlla prima i campi obbligatori.
+  function stampa() {
+    if (!stato.scheda) return;
+    if (!controllaObbligatori('stampare il PDF')) return;
+    window.print();
+  }
+  $('stampa').addEventListener('click', stampa);
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 'p' || e.key === 'P') && stato.scheda && !$('vista').hidden) {
+      e.preventDefault();
+      stampa();
+    }
+  });
+
+  // ── Tema chiaro / scuro ──────────────────────────────────────────────────
+  var TEMI = ['auto', 'light', 'dark'];
+  var NOMI_TEMA = { auto: 'automatico', light: 'chiaro', dark: 'scuro' };
+  function applicaTema(t) {
+    if (t === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', t);
+    $('tema').textContent = 'Tema: ' + NOMI_TEMA[t];
+    scriviLocale(CHIAVE_TEMA, t === 'auto' ? null : t);
+  }
+  $('tema').addEventListener('click', function () {
+    var attuale = document.documentElement.getAttribute('data-theme') || 'auto';
+    applicaTema(TEMI[(TEMI.indexOf(attuale) + 1) % TEMI.length]);
+  });
+
+  // ── Avvio ────────────────────────────────────────────────────────────────
+  applicaTema(leggiLocale(CHIAVE_TEMA) || 'auto');
+  $('nome-pm').value = leggiLocale(CHIAVE_NOME) || '';
+  stato.utente = $('nome-pm').value;
+  if (leggiLocale(CHIAVE_CODICE)) $('codice').placeholder = 'Già inserito in questo browser';
+  mostraRecupero();
+  aggiornaApertura();
+})();
+</script>
+</body>
+</html>

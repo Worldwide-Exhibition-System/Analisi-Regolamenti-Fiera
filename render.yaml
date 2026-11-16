@@ -1,0 +1,35 @@
+# Blueprint Render per la Scheda regolamenti fiera WES.
+# Sta alla radice del repository Worldwide-Exhibition-System/Analisi-Regolamenti-Fiera, accanto alle cartelle backend/
+# e frontend/. Il backend serve anche la pagina dell'app (frontend/index.html),
+# per questo i comandi partono dalla cartella backend invece di usare rootDir.
+services:
+  - type: web
+    name: wes-scheda-regolamenti
+    runtime: node
+    plan: free
+    buildCommand: cd backend && npm ci
+    startCommand: cd backend && npm start
+    healthCheckPath: /health
+    buildFilter:
+      paths:
+        - "backend/**"
+        - "frontend/**"
+        - "render.yaml"
+    envVars:
+      # Valori segreti: si inseriscono a mano nel pannello Render, non qui.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CODICE_ACCESSO
+        sync: false
+      - key: FIRMA_SEGRETO
+        sync: false
+      - key: MODELLO
+        value: claude-sonnet-5-5
+      - key: EFFORT
+        value: medium
+      - key: MAX_MB
+        value: "25"
+      - key: LIMITE_ORARIO
+        value: "200"
+      - key: NODE_VERSION
+        value: "22"
